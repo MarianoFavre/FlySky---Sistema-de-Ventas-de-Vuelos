@@ -27,7 +27,7 @@ public class VueloEntity {
     @JsonManagedReference
     private List<ButacaEntity> butacas;
 
-    private Boolean disponible = false;
+    private Boolean disponible;
     private Integer capacidad;
     private String aerolinea;
     private LocalDateTime horarioPartida;

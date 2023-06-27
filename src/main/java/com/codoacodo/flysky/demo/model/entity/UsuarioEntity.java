@@ -19,10 +19,11 @@ public class UsuarioEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String nombreUsuario;
+
     @Enumerated(EnumType.STRING)
     private TipoUsuario tipoUsuario;
 
-    private String nombreUsuario;
     private Integer telefono;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)

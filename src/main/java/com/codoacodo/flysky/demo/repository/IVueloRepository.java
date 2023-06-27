@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface VueloRepository extends JpaRepository<VueloEntity, Long> {
+public interface IVueloRepository extends JpaRepository<VueloEntity, Long> {
     List<VueloEntity> findByDisponibleTrue();
 }
