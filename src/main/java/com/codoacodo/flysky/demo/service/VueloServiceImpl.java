@@ -33,8 +33,10 @@ public class VueloServiceImpl implements IVueloService {
         ModelMapper mapper = new ModelMapper();
 
         List<VueloDto> vuelosDto = new ArrayList<>();
-
         vuelosEntity.stream().forEach(vueloEntity -> vuelosDto.add(mapper.map(vueloEntity, VueloDto.class)));
+
+        //Otra alternativa
+        //List<VueloDto> vuelosDto = vuelosEntity.stream().map(vueloEntity-> mapper.map(vueloEntity, VueloDto.class)).toList();
 
         return vuelosDto;
     }
