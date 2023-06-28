@@ -1,33 +1,28 @@
-package com.codoacodo.flysky.demo.model.entity;
+package com.codoacodo.flysky.demo.dto.response;
 
+import com.codoacodo.flysky.demo.model.entity.ButacaEntity;
+import com.codoacodo.flysky.demo.model.entity.ReservaEntity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity
-@Table(name = "vuelo")
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VueloEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@Getter
+@Setter //El DTO es inmutable pero utilizamos el set porque lo necesita el objeto de tipo ModelMapper.
+public class VueloDto {
 
     //private Integer numeroVuelo;
 
-    @OneToMany(mappedBy = "vuelo", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<ReservaEntity> reservas;
+    private List<ReservaDto> reservas;
 
-    @OneToMany(mappedBy = "vuelo", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<ButacaEntity> butacas;
+    private List<ButacaDto> butacas;
 
     private Boolean disponible;
     private Integer capacidad;

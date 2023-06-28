@@ -8,5 +8,9 @@ import java.util.List;
 
 @Repository
 public interface IVueloRepository extends JpaRepository<VueloEntity, Long> {
+
+    //https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.query-creation
     List<VueloEntity> findByDisponibleTrue();
+
 }
+
