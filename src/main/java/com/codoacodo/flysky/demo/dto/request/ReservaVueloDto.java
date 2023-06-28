@@ -1,9 +1,10 @@
-package com.codoacodo.flysky.demo.dto.response;
+package com.codoacodo.flysky.demo.dto.request;
 
-import com.codoacodo.flysky.demo.model.entity.ButacaEntity;
-import com.codoacodo.flysky.demo.model.entity.ReservaEntity;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
+import com.codoacodo.flysky.demo.dto.response.ButacaDto;
+import com.codoacodo.flysky.demo.dto.response.ReservaDto;
+import com.codoacodo.flysky.demo.model.enums.TipoPago;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,18 +17,20 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter //El DTO es inmutable pero utilizamos el set porque lo necesita el objeto de tipo ModelMapper.
-public class VueloDto {
+public class ReservaVueloDto {
 
     //private Integer numeroVuelo;
 
-    private Boolean disponible;
-    private Integer capacidad;
     private String aerolinea;
     private LocalDateTime horarioPartida;
     private LocalDateTime horarioLlegada;
-    private Double precio;
     private String origen;
     private String destino;
 
-    private List<ButacaDto> butacas;
+    private String posicionButaca;
+
+    //User Story 3
+    @Enumerated(EnumType.STRING)
+    private TipoPago tipoPago;
+
 }
