@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "reserva")
 @Data
@@ -19,6 +21,10 @@ public class ReservaEntity {
 
     @Enumerated(EnumType.STRING)
     private TipoPago tipoPago;
+
+    private double montoPagar;
+
+    private LocalDateTime fechaHoraReserva;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "usuario_id", nullable = false)

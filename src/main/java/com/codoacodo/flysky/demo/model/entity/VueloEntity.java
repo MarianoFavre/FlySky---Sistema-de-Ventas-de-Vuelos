@@ -32,8 +32,8 @@ public class VueloEntity {
     private Boolean disponible;
     private Integer capacidad;
     private String aerolinea;
-    private LocalDateTime horarioPartida;
-    private LocalDateTime horarioLlegada;
+    private LocalDateTime fechaHoraPartida;
+    private LocalDateTime fechaHoraLlegada;
     private Double precio;
     private String origen;
     private String destino;

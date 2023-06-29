@@ -1,8 +1,6 @@
 package com.codoacodo.flysky.demo.dto.response;
 
-import com.codoacodo.flysky.demo.model.entity.VueloEntity;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

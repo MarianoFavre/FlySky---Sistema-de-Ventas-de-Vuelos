@@ -1,9 +1,5 @@
 package com.codoacodo.flysky.demo.dto.response;
 
-import com.codoacodo.flysky.demo.model.entity.ButacaEntity;
-import com.codoacodo.flysky.demo.model.entity.ReservaEntity;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,8 +19,8 @@ public class VueloDto {
     private Boolean disponible;
     private Integer capacidad;
     private String aerolinea;
-    private LocalDateTime horarioPartida;
-    private LocalDateTime horarioLlegada;
+    private LocalDateTime fechaHoraPartida;
+    private LocalDateTime fechaHoraLlegada;
     private Double precio;
     private String origen;
     private String destino;
