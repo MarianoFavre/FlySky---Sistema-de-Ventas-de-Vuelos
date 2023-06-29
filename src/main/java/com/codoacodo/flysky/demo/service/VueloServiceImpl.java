@@ -25,7 +25,8 @@ public class VueloServiceImpl implements IVueloService {
 
         List<VueloEntity> vuelosEntity = vueloRepository.findByDisponibleTrue();
 
-        //si la disponibilidad es false, la base de datos va a retornar una lista de vuelos vacía. No lanza una excepción.
+        //si la disponibilidad de todos los registro de la tabla vuelo es false, la base de datos va a retornar
+        // una lista de vuelos vacía sin lanzar una excepción.
         if (vuelosEntity.isEmpty()) {
             throw new VueloNotFoundException("No hay vuelos disponibles en este momento. Intente más tarde.");
         }
