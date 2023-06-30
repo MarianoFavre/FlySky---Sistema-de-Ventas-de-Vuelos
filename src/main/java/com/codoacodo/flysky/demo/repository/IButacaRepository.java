@@ -1,9 +1,10 @@
 package com.codoacodo.flysky.demo.repository;
 
-import com.codoacodo.flysky.demo.model.entity.ReservaEntity;
+import com.codoacodo.flysky.demo.model.entity.ButacaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface IReservaRepository extends JpaRepository<ReservaEntity, Long> {
+public interface IButacaRepository extends JpaRepository<ButacaEntity, Long> {
+
 }

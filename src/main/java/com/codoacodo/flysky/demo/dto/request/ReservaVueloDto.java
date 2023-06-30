@@ -22,15 +22,14 @@ public class ReservaVueloDto {
     //private Integer numeroVuelo;
 
     private String aerolinea;
-    private LocalDateTime horarioPartida;
-    private LocalDateTime horarioLlegada;
+    private LocalDateTime fechaHoraPartida;
+    private LocalDateTime fechaHoraLlegada;
     private String origen;
     private String destino;
 
     private String posicionButaca;
 
     //User Story 3
-    @Enumerated(EnumType.STRING)
     private TipoPago tipoPago;
 
 }
