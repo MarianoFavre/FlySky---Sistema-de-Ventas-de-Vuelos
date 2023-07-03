@@ -5,7 +5,7 @@ import com.codoacodo.flysky.demo.dto.request.ReservaVueloDto;
 import com.codoacodo.flysky.demo.dto.response.ReservaDto;
 import com.codoacodo.flysky.demo.dto.response.ReservaVueloResponseDto;
 import com.codoacodo.flysky.demo.dto.response.VueloDto;
-import com.codoacodo.flysky.demo.exception.NotFoundException;
+import com.codoacodo.flysky.demo.exception.EntityNotFoundException;
 import com.codoacodo.flysky.demo.exception.UnAuthorizedException;
 import com.codoacodo.flysky.demo.model.entity.ButacaEntity;
 import com.codoacodo.flysky.demo.model.entity.ReservaEntity;
@@ -48,7 +48,7 @@ public class VueloServiceImpl implements IVueloService {
         //si la disponibilidad de todos los registro de la tabla vuelo es false, la base de datos va a retornar
         // una lista de vuelos vacía sin lanzar una excepción.
         if (vuelosEntity.isEmpty()) {
-            throw new NotFoundException("No hay vuelos disponibles en este momento. Intente más tarde.");
+            throw new EntityNotFoundException("No hay vuelos disponibles en este momento. Intente más tarde.");
         }
 
         ModelMapper mapper = new ModelMapper();
@@ -75,7 +75,7 @@ public class VueloServiceImpl implements IVueloService {
                 //si la disponibilidad de todos los registro de la tabla vuelo es false, la base de datos va a retornar
                 // una lista de vuelos vacía sin lanzar una excepción.
                 if (vuelosDisponibles.isEmpty()) {
-                    throw new NotFoundException("No hay vuelos disponibles en este momento. Intente más tarde.");
+                    throw new EntityNotFoundException("No hay vuelos disponibles en este momento. Intente más tarde.");
                 }
 
                 Optional<VueloEntity> vueloDisponibleReserva = vuelosDisponibles.stream()
@@ -89,13 +89,13 @@ public class VueloServiceImpl implements IVueloService {
                 //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR DE LO QUE HAY
                 // DISPONIBLE Y NO PARA RELLENAR
                 if (vueloDisponibleReserva.isEmpty()) {
-                    throw new NotFoundException("El vuelo que quiere reservar no existe entre los vuelos disponibles.");
+                    throw new EntityNotFoundException("El vuelo que quiere reservar no existe entre los vuelos disponibles.");
                 }
 
                 List<ButacaEntity> butacasVueloDisponibleReserva = vueloDisponibleReserva.get().getButacas();
 
                 if (butacasVueloDisponibleReserva.isEmpty()) {
-                    throw new NotFoundException("El vuelo que quiere reservar no tiene asignadas butacas.");
+                    throw new EntityNotFoundException("El vuelo que quiere reservar no tiene asignadas butacas.");
                 }
 
                 Optional<ButacaEntity> butacaVueloDisponibleReserva = butacasVueloDisponibleReserva.stream()
@@ -104,13 +104,13 @@ public class VueloServiceImpl implements IVueloService {
                 //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR DE LO QUE HAY
                 // DISPONIBLE Y NO PARA RELLENAR
                 if (butacaVueloDisponibleReserva.isEmpty()) {
-                    throw new NotFoundException("La posición de la butaca seleccionada no pertenece " +
+                    throw new EntityNotFoundException("La posición de la butaca seleccionada no pertenece " +
                             "al vuelo.");
                 }
                 //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR DE LO QUE HAY
                 // DISPONIBLE Y NO PARA RELLENAR
                 if (!butacaVueloDisponibleReserva.get().getDisponible()) {
-                    throw new NotFoundException("La posición de la butaca seleccionada no está disponible.");
+                    throw new EntityNotFoundException("La posición de la butaca seleccionada no está disponible.");
                 }
 
                 //Modificamos por FALSE la disponibilidad de la butaca reservada.
@@ -234,10 +234,10 @@ public class VueloServiceImpl implements IVueloService {
                         return reservasDto;
 
                     }
-                    throw new NotFoundException("El usuario al que pretende visualizar sus reservas está registrado " +
+                    throw new EntityNotFoundException("El usuario al que pretende visualizar sus reservas está registrado " +
                             "pero no como cliente por lo que no tiene reservas, ya que no las puede hacer.");
                 }
-                throw new NotFoundException("El usuario al que pretende visualizar sus reservas no está registrado.");
+                throw new EntityNotFoundException("El usuario al que pretende visualizar sus reservas no está registrado.");
             }
             throw new UnAuthorizedException("Usuario registrado pero no habilitado para poder visualizar el listado " +
                     "de reservas. Registrese como Agente de ventas.");
