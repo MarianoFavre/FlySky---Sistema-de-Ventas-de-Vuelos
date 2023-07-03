@@ -177,7 +177,7 @@ public class VueloServiceImpl implements IVueloService {
         }
         throw new UnAuthorizedException("Usuario no registrado. Registrese como CLIENTE para poder realizar reservas.");
     }
-
+/*
     @Override
     public List<ReservaDto> obtenerReservasPorNombreUsuario(String nombreUsuarioTipoAgente, String nombreUsuarioTipoCliente) {
         ModelMapper mapper = new ModelMapper();
@@ -211,5 +211,36 @@ public class VueloServiceImpl implements IVueloService {
         throw new NotFoundException("Usuario no registrado. Registrese como Agente de ventas para poder " +
                 "visualizar el listado de reservas por cliente.");
     }
+*/
+    @Override
+    public List<ReservaDto> obtenerReservasPorNombreUsuario(String nombreUsuarioTipoAgente, String nombreUsuarioTipoCliente) {
+        ModelMapper mapper = new ModelMapper();
+
+        Optional<UsuarioEntity> usuarioAgente = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoAgente);
+
+
+            //if (usuarioAgente.get().getTipoUsuario().getDescripcion().equalsIgnoreCase("Agente de ventas"))
+            if (usuarioAgente.get().getTipoUsuario().equals(TipoUsuario.AGENTE_DE_VENTAS)) {
+
+                Optional<UsuarioEntity> usuarioCliente = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente);
+
+                if (usuarioCliente.isPresent()) {
+                    if (usuarioCliente.get().getTipoUsuario().equals(TipoUsuario.CLIENTE)) {
+
+                        List<ReservaEntity> reservasEntity = reservaRepository.findByUsuario(usuarioCliente.get());
+                        List<ReservaDto> reservasDto = reservasEntity.stream()
+                                .map(reservaEntity -> mapper.map(reservaEntity, ReservaDto.class))
+                                .toList();
+                        return reservasDto;
+
+                    }
+                    throw new NotFoundException("El usuario al que pretende visualizar sus reservas está registrado " +
+                            "pero no como cliente por lo que no tiene reservas, ya que no las puede hacer.");
+                }
+                throw new NotFoundException("El usuario al que pretende visualizar sus reservas no está registrado.");
+            }
+            throw new UnAuthorizedException("Usuario registrado pero no habilitado para poder visualizar el listado " +
+                    "de reservas. Registrese como Agente de ventas.");
+        }
 
 }
