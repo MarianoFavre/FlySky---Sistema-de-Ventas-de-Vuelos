@@ -22,7 +22,7 @@ public class ReservaEntity {
     @Enumerated(EnumType.STRING)
     private TipoPago tipoPago;
 
-    private double montoPagar;
+    private double montoPago;
 
     private LocalDateTime fechaHoraReserva;
 

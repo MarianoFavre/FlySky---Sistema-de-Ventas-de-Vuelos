@@ -8,5 +8,5 @@ import java.util.List;
 public interface IVueloService {
     List<VueloDto> obtenerVuelosDisponibles();
 
-    ReservaVueloDto reservarVuelo(String nombreUsuario, int telefono, ReservaVueloDto reservaVueloDto) ;
+    ReservaVueloDto reservarVuelo(String nombreUsuario, ReservaVueloDto reservaVueloDto) ;
 }

@@ -21,11 +21,10 @@ public class VueloController {
         return new ResponseEntity<>(vueloService.obtenerVuelosDisponibles(), HttpStatus.OK);
     }
 
-    @PutMapping("/reserva/{nombreUsuario}/{telefono}")
+    @PutMapping("/reserva/{nombreUsuario}")
     public ResponseEntity<?> reservarVuelo(@PathVariable String nombreUsuario,
-                                           @PathVariable int telefono,
                                            @RequestBody ReservaVueloDto reservaVueloDto) {
-        return new ResponseEntity<>(vueloService.reservarVuelo(nombreUsuario, telefono, reservaVueloDto) , HttpStatus.OK);
+        return new ResponseEntity<>(vueloService.reservarVuelo(nombreUsuario, reservaVueloDto) , HttpStatus.OK);
     }
 
 }

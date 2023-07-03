@@ -29,6 +29,9 @@ public class ReservaVueloDto {
 
     private String posicionButaca;
 
+    //En la solicitud no se envía ningún dato. Se utiliza solo para la respuesta.
+    private LocalDateTime fechaHoraReserva;
+
     //User Story 3
     private TipoPago tipoPago;
 

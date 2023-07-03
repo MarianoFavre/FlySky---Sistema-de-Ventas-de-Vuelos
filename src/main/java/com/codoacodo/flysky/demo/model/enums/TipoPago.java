@@ -4,8 +4,7 @@ public enum TipoPago {
     TARJETA_CREDITO("Tarjeta de crédito"),
     TARJETA_DEBITO("Tarjeta de débito"),
     TRANSFERENCIA_BANCARIA("Transferencia bancaria"),
-    PAGO_EN_LINEA("Pago en línea"),
-    EFECTIVO("Efectivo");
+    PAGO_EN_LINEA("Pago en línea");
 
     private final String descripcion;
 
@@ -16,4 +15,4 @@ public enum TipoPago {
     public String getDescripcion() {
         return descripcion;
     }
-}
+    }
