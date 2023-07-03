@@ -1,12 +1,14 @@
 package com.codoacodo.flysky.demo.repository;
 
 import com.codoacodo.flysky.demo.model.entity.ReservaEntity;
-import org.hibernate.mapping.List;
+import com.codoacodo.flysky.demo.model.entity.UsuarioEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface IReservaRepository extends JpaRepository<ReservaEntity, Long> {
 
-    List findByUsuario(String nombreUsuarioTipoCliente);
+     List<ReservaEntity> findByUsuario(UsuarioEntity usuarioEntity);
 }

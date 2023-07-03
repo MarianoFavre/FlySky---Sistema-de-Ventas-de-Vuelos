@@ -156,13 +156,7 @@ public class VueloServiceImpl implements IVueloService {
                 reservaEntityPersistencia.setVuelo(vueloDisponibleReserva.get());
 
                 ReservaEntity reservaEntity = reservaRepository.save(reservaEntityPersistencia);
-/*
-                ModelMapper mapper = new ModelMapper();
-                ReservaDto reservaDto = mapper.map(reservaEntity, ReservaDto.class);
 
-                return reservaDto;
-
- */
                 ReservaVueloResponseDto reservaVueloResponseDto = new ReservaVueloResponseDto();
                 reservaVueloResponseDto.setNombreUsuario(reservaEntityPersistencia.getUsuario().getNombreUsuario());
                 reservaVueloResponseDto.setAerolinea(reservaEntityPersistencia.getVuelo().getAerolinea());
@@ -186,22 +180,36 @@ public class VueloServiceImpl implements IVueloService {
 
     @Override
     public List<ReservaDto> obtenerReservasPorNombreUsuario(String nombreUsuarioTipoAgente, String nombreUsuarioTipoCliente) {
+        ModelMapper mapper = new ModelMapper();
 
-        Optional<UsuarioEntity> usuario = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoAgente);
+        Optional<UsuarioEntity> usuarioAgente = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoAgente);
 
-        if (usuario.isPresent()) {
-            //if (usuario.get().getTipoUsuario().getDescripcion().equalsIgnoreCase("Agente de ventas"))
-            if (usuario.get().getTipoUsuario().equals(TipoUsuario.AGENTE_DE_VENTAS)) {
+        if (usuarioAgente.isPresent()) {
+            //if (usuarioAgente.get().getTipoUsuario().getDescripcion().equalsIgnoreCase("Agente de ventas"))
+            if (usuarioAgente.get().getTipoUsuario().equals(TipoUsuario.AGENTE_DE_VENTAS)) {
 
-                reservaRepository.findByUsuario(nombreUsuarioTipoCliente);
+                Optional<UsuarioEntity> usuarioCliente = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente);
 
+                if (usuarioCliente.isPresent()) {
+                    if (usuarioCliente.get().getTipoUsuario().equals(TipoUsuario.CLIENTE)) {
 
+                        List<ReservaEntity> reservasEntity = reservaRepository.findByUsuario(usuarioCliente.get());
+                        List<ReservaDto> reservasDto = reservasEntity.stream()
+                                .map(reservaEntity -> mapper.map(reservaEntity, ReservaDto.class))
+                                .toList();
+                        return reservasDto;
 
+                    }
+                    throw new NotFoundException("El usuario al que pretende visualizar sus reservas está registrado " +
+                            "pero no como cliente por lo que no tiene reservas, ya que no las puede hacer.");
+                }
+                throw new NotFoundException("El usuario al que pretende visualizar sus reservas no está registrado.");
             }
-            throw new UnAuthorizedException("Usuario registrado pero no habilitado para poder visualizar el listado de" +
-                    " reservas. Registrese como Agente de ventas.");
+            throw new UnAuthorizedException("Usuario registrado pero no habilitado para poder visualizar el listado " +
+                    "de reservas. Registrese como Agente de ventas.");
         }
-        throw new UnAuthorizedException("Usuario no registrado. Registrese como Agente de ventas para poder visualizar " +
-                "el listado de reservas por cliente.");
+        throw new NotFoundException("Usuario no registrado. Registrese como Agente de ventas para poder " +
+                "visualizar el listado de reservas por cliente.");
     }
+
 }

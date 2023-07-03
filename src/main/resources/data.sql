@@ -15,4 +15,5 @@ VALUES ('TARJETA_CREDITO',1,1, 15000, '2023-04-25 12:32:56');
 
 INSERT INTO butaca(disponible, posicion, vuelo_id)
 VALUES (TRUE, 'AE04', 1),
-       (TRUE, 'AE05', 1);
+       (TRUE, 'AE05', 1),
+       (TRUE, 'AE06', 1);
