@@ -16,9 +16,9 @@ import java.util.List;
 public class UsuarioDto {
     private String nombreUsuario;
 
-    private TipoUsuario tipoUsuario;
+    //private TipoUsuario tipoUsuario;
 
     private Integer telefono;
 
-    private List<ReservaDto> reserva;
+    //private List<ReservaDto> reserva;
 }

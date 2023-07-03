@@ -1,6 +1,7 @@
 package com.codoacodo.flysky.demo.dto.response;
 
 
+import com.codoacodo.flysky.demo.model.entity.VueloEntity;
 import com.codoacodo.flysky.demo.model.enums.TipoPago;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,9 +18,11 @@ public class ReservaDto {
 
     private TipoPago tipoPago;
 
-    private double montoPagar;
+    private double montoPago;
 
     private LocalDateTime fechaHoraReserva;
 
     private UsuarioDto usuario;
+
+    private VueloDto vuelo;
 }

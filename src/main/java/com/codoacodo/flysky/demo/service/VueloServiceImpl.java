@@ -2,14 +2,18 @@ package com.codoacodo.flysky.demo.service;
 
 import com.codoacodo.flysky.demo.Util;
 import com.codoacodo.flysky.demo.dto.request.ReservaVueloDto;
+import com.codoacodo.flysky.demo.dto.response.ReservaDto;
+import com.codoacodo.flysky.demo.dto.response.ReservaVueloResponseDto;
 import com.codoacodo.flysky.demo.dto.response.VueloDto;
 import com.codoacodo.flysky.demo.exception.NotFoundException;
 import com.codoacodo.flysky.demo.exception.UnAuthorizedException;
 import com.codoacodo.flysky.demo.model.entity.ButacaEntity;
+import com.codoacodo.flysky.demo.model.entity.ReservaEntity;
 import com.codoacodo.flysky.demo.model.entity.UsuarioEntity;
 import com.codoacodo.flysky.demo.model.entity.VueloEntity;
 import com.codoacodo.flysky.demo.model.enums.TipoUsuario;
 import com.codoacodo.flysky.demo.repository.IButacaRepository;
+import com.codoacodo.flysky.demo.repository.IReservaRepository;
 import com.codoacodo.flysky.demo.repository.IUsuarioRepository;
 import com.codoacodo.flysky.demo.repository.IVueloRepository;
 import org.modelmapper.ModelMapper;
@@ -24,15 +28,17 @@ import java.util.Optional;
 public class VueloServiceImpl implements IVueloService {
     private IVueloRepository vueloRepository;
     private IUsuarioRepository usuarioRepository;
-
     private IButacaRepository butacaRepository;
 
-    public VueloServiceImpl(IVueloRepository vueloRepository, IUsuarioRepository usuarioRepository, IButacaRepository butacaRepository) {
+    private IReservaRepository reservaRepository;
+
+    public VueloServiceImpl(IVueloRepository vueloRepository, IUsuarioRepository usuarioRepository,
+                            IButacaRepository butacaRepository, IReservaRepository reservaRepository) {
         this.vueloRepository = vueloRepository;
         this.usuarioRepository = usuarioRepository;
         this.butacaRepository = butacaRepository;
+        this.reservaRepository = reservaRepository;
     }
-
 
     @Override
     public List<VueloDto> obtenerVuelosDisponibles() {
@@ -57,7 +63,7 @@ public class VueloServiceImpl implements IVueloService {
     }
 
     @Override
-    public ReservaVueloDto reservarVuelo(String nombreUsuario, ReservaVueloDto reservaVueloDto) {
+    public ReservaVueloResponseDto reservarVuelo(String nombreUsuario, ReservaVueloDto reservaVueloDto) {
 
         Optional<UsuarioEntity> usuario = usuarioRepository.findByNombreUsuario(nombreUsuario);
 
@@ -72,7 +78,6 @@ public class VueloServiceImpl implements IVueloService {
                     throw new NotFoundException("No hay vuelos disponibles en este momento. Intente más tarde.");
                 }
 
-                //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR Y NO PARA RELLENAR
                 Optional<VueloEntity> vueloDisponibleReserva = vuelosDisponibles.stream()
                         .filter(vueloDisponible ->
                                 vueloDisponible.getAerolinea().equalsIgnoreCase(reservaVueloDto.getAerolinea()) &
@@ -81,7 +86,8 @@ public class VueloServiceImpl implements IVueloService {
                                         vueloDisponible.getOrigen().equalsIgnoreCase(reservaVueloDto.getOrigen()) &
                                         vueloDisponible.getDestino().equalsIgnoreCase(reservaVueloDto.getDestino())
                         ).findFirst();
-
+                //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR DE LO QUE HAY
+                // DISPONIBLE Y NO PARA RELLENAR
                 if (vueloDisponibleReserva.isEmpty()) {
                     throw new NotFoundException("El vuelo que quiere reservar no existe entre los vuelos disponibles.");
                 }
@@ -95,12 +101,14 @@ public class VueloServiceImpl implements IVueloService {
                 Optional<ButacaEntity> butacaVueloDisponibleReserva = butacasVueloDisponibleReserva.stream()
                         .filter(butaca -> reservaVueloDto.getPosicionButaca().equals(butaca.getPosicion()))
                         .findFirst();
-
+                //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR DE LO QUE HAY
+                // DISPONIBLE Y NO PARA RELLENAR
                 if (butacaVueloDisponibleReserva.isEmpty()) {
                     throw new NotFoundException("La posición de la butaca seleccionada no pertenece " +
                             "al vuelo.");
                 }
-
+                //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR DE LO QUE HAY
+                // DISPONIBLE Y NO PARA RELLENAR
                 if (!butacaVueloDisponibleReserva.get().getDisponible()) {
                     throw new NotFoundException("La posición de la butaca seleccionada no está disponible.");
                 }
@@ -122,10 +130,6 @@ public class VueloServiceImpl implements IVueloService {
                         .filter(butaca -> butaca.getDisponible().equals(Boolean.FALSE))
                         .toList();
 
-                if (butacasNoDisponibles.isEmpty()) {
-                    throw new NotFoundException("El vuelo tiene todas las butacas disponibles.");
-                }
-
                 if (butacasNoDisponibles.size() == vueloDisponibleReserva.get().getCapacidad()) {
 
                     VueloEntity vueloDisponibleReservaPersistencia = new VueloEntity();
@@ -140,14 +144,39 @@ public class VueloServiceImpl implements IVueloService {
                     vueloDisponibleReservaPersistencia.setDestino(vueloDisponibleReserva.get().getDestino());
 
                     vueloRepository.save(vueloDisponibleReservaPersistencia);
-
                 }
 
-                //reservaVueloDto. = Util.montoAPagar(reservaVueloDto.getTipoPago(), vueloDisponibleReserva.get().getPrecio());
+                Double montoPago = Util.montoAPagar(reservaVueloDto.getTipoPago(), vueloDisponibleReserva.get().getPrecio());
 
-                reservaVueloDto.setFechaHoraReserva(LocalDateTime.now());
+                ReservaEntity reservaEntityPersistencia = new ReservaEntity();
+                reservaEntityPersistencia.setTipoPago(reservaVueloDto.getTipoPago());
+                reservaEntityPersistencia.setMontoPago(montoPago);
+                reservaEntityPersistencia.setFechaHoraReserva(LocalDateTime.now());
+                reservaEntityPersistencia.setUsuario(usuario.get());
+                reservaEntityPersistencia.setVuelo(vueloDisponibleReserva.get());
 
-                return reservaVueloDto;
+                ReservaEntity reservaEntity = reservaRepository.save(reservaEntityPersistencia);
+/*
+                ModelMapper mapper = new ModelMapper();
+                ReservaDto reservaDto = mapper.map(reservaEntity, ReservaDto.class);
+
+                return reservaDto;
+
+ */
+                ReservaVueloResponseDto reservaVueloResponseDto = new ReservaVueloResponseDto();
+                reservaVueloResponseDto.setNombreUsuario(reservaEntityPersistencia.getUsuario().getNombreUsuario());
+                reservaVueloResponseDto.setAerolinea(reservaEntityPersistencia.getVuelo().getAerolinea());
+                reservaVueloResponseDto.setFechaHoraPartida(reservaEntityPersistencia.getVuelo().getFechaHoraPartida());
+                reservaVueloResponseDto.setFechaHoraLlegada(reservaEntityPersistencia.getVuelo().getFechaHoraLlegada());
+                reservaVueloResponseDto.setOrigen(reservaEntityPersistencia.getVuelo().getOrigen());
+                reservaVueloResponseDto.setDestino(reservaEntityPersistencia.getVuelo().getDestino());
+                reservaVueloResponseDto.setPosicionButaca(butacaPersitencia.getPosicion());
+                reservaVueloResponseDto.setTipoPago(reservaEntityPersistencia.getTipoPago());
+                reservaVueloResponseDto.setMontoPago(reservaEntityPersistencia.getMontoPago());
+                reservaVueloResponseDto.setFechaHoraReserva(reservaEntityPersistencia.getFechaHoraReserva());
+
+                return reservaVueloResponseDto;
+
             }
             throw new UnAuthorizedException("Usuario registrado pero no habilitado para poder realizar reservas. Registrese como CLIENTE.");
         }
