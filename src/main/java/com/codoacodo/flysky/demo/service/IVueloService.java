@@ -10,5 +10,7 @@ import java.util.List;
 public interface IVueloService {
     List<VueloDto> obtenerVuelosDisponibles();
 
-    ReservaVueloResponseDto reservarVuelo(String nombreUsuario, ReservaVueloDto reservaVueloDto) ;
+    ReservaVueloResponseDto reservarVuelo(String nombreUsuario, ReservaVueloDto reservaVueloDto);
+
+    List<ReservaDto> obtenerReservasPorNombreUsuario(String nombreUsuarioTipoAgente, String nombreUsuarioTipoCliente);
 }

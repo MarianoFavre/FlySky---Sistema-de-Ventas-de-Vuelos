@@ -178,8 +178,30 @@ public class VueloServiceImpl implements IVueloService {
                 return reservaVueloResponseDto;
 
             }
-            throw new UnAuthorizedException("Usuario registrado pero no habilitado para poder realizar reservas. Registrese como CLIENTE.");
+            throw new UnAuthorizedException("Usuario registrado pero no habilitado para poder realizar reservas. " +
+                    "Registrese como CLIENTE.");
         }
         throw new UnAuthorizedException("Usuario no registrado. Registrese como CLIENTE para poder realizar reservas.");
+    }
+
+    @Override
+    public List<ReservaDto> obtenerReservasPorNombreUsuario(String nombreUsuarioTipoAgente, String nombreUsuarioTipoCliente) {
+
+        Optional<UsuarioEntity> usuario = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoAgente);
+
+        if (usuario.isPresent()) {
+            //if (usuario.get().getTipoUsuario().getDescripcion().equalsIgnoreCase("Agente de ventas"))
+            if (usuario.get().getTipoUsuario().equals(TipoUsuario.AGENTE_DE_VENTAS)) {
+
+                reservaRepository.findByUsuario(nombreUsuarioTipoCliente);
+
+
+
+            }
+            throw new UnAuthorizedException("Usuario registrado pero no habilitado para poder visualizar el listado de" +
+                    " reservas. Registrese como Agente de ventas.");
+        }
+        throw new UnAuthorizedException("Usuario no registrado. Registrese como Agente de ventas para poder visualizar " +
+                "el listado de reservas por cliente.");
     }
 }

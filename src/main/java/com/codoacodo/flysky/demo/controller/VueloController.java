@@ -1,6 +1,7 @@
 package com.codoacodo.flysky.demo.controller;
 
 import com.codoacodo.flysky.demo.dto.request.ReservaVueloDto;
+import com.codoacodo.flysky.demo.model.enums.TipoUsuario;
 import com.codoacodo.flysky.demo.service.IVueloService;
 import com.codoacodo.flysky.demo.service.VueloServiceImpl;
 import org.springframework.http.HttpStatus;
@@ -21,10 +22,18 @@ public class VueloController {
         return new ResponseEntity<>(vueloService.obtenerVuelosDisponibles(), HttpStatus.OK);
     }
 
-    @PutMapping("/reserva/{nombreUsuario}")
-    public ResponseEntity<?> reservarVuelo(@PathVariable String nombreUsuario,
+    @PutMapping("/nuevaReserva/{nombreUsuarioTipoCliente}")
+    public ResponseEntity<?> reservarVuelo(@PathVariable String nombreUsuarioTipoCliente,
                                            @RequestBody ReservaVueloDto reservaVueloDto) {
-        return new ResponseEntity<>(vueloService.reservarVuelo(nombreUsuario, reservaVueloDto) , HttpStatus.OK);
+        return new ResponseEntity<>(vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto), HttpStatus.OK);
+    }
+
+    @GetMapping("/reservas/{nombreUsuarioTipoAgente}/{nombreUsuarioTipoCliente}")
+    public ResponseEntity<?> obtenerReservasPorNombreUsuario(@PathVariable String nombreUsuarioTipoAgente,
+                                                  @PathVariable String nombreUsuarioTipoCliente) {
+
+        return new ResponseEntity<>(vueloService.obtenerReservasPorNombreUsuario(nombreUsuarioTipoAgente,
+                nombreUsuarioTipoCliente), HttpStatus.OK);
     }
 
 }
