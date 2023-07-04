@@ -24,9 +24,9 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<?> NoSuchElemen(NoSuchElementException e){
-        ExceptionDto exceptionDto = new ExceptionDto(500, e.getMessage()
-                .replace("No value present", "Usuario no registrado."));
+    public ResponseEntity<?> elementoNoExiste(NoSuchElementException e){
+        ExceptionDto exceptionDto = new ExceptionDto(500, e.getMessage());
+                //.replace("No value present", "Usuario no registrado."));
         return new ResponseEntity<>(exceptionDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

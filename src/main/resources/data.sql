@@ -1,5 +1,6 @@
 INSERT INTO usuario(telefono, nombre_usuario, tipo_usuario)
 VALUES (156453,'Miguel','CLIENTE'),
+       (467538,'Carlos','AGENTE_DE_VENTAS'),
        (984866,'Juan', 'ADMINISTRADOR'),
        (666666,'Mariano','CLIENTE');
 

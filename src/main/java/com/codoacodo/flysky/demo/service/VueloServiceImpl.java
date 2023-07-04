@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -89,7 +90,7 @@ public class VueloServiceImpl implements IVueloService {
                 //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR DE LO QUE HAY
                 // DISPONIBLE Y NO PARA RELLENAR
                 if (vueloDisponibleReserva.isEmpty()) {
-                    throw new EntityNotFoundException("El vuelo que quiere reservar no existe entre los vuelos disponibles.");
+                    throw new NoSuchElementException("El vuelo que quiere reservar no existe entre los vuelos disponibles.");
                 }
 
                 List<ButacaEntity> butacasVueloDisponibleReserva = vueloDisponibleReserva.get().getButacas();
@@ -104,7 +105,7 @@ public class VueloServiceImpl implements IVueloService {
                 //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR DE LO QUE HAY
                 // DISPONIBLE Y NO PARA RELLENAR
                 if (butacaVueloDisponibleReserva.isEmpty()) {
-                    throw new EntityNotFoundException("La posición de la butaca seleccionada no pertenece " +
+                    throw new NoSuchElementException("La posición de la butaca seleccionada no pertenece " +
                             "al vuelo.");
                 }
                 //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR DE LO QUE HAY
@@ -164,7 +165,7 @@ public class VueloServiceImpl implements IVueloService {
                 reservaVueloResponseDto.setFechaHoraLlegada(reservaEntityPersistencia.getVuelo().getFechaHoraLlegada());
                 reservaVueloResponseDto.setOrigen(reservaEntityPersistencia.getVuelo().getOrigen());
                 reservaVueloResponseDto.setDestino(reservaEntityPersistencia.getVuelo().getDestino());
-                reservaVueloResponseDto.setPosicionButaca(butacaPersitencia.getPosicion());
+                reservaVueloResponseDto.setPosicionButaca(butacaPersitencia.getPosicion());  //Por esta linea no utilizamos un ModelMapper.
                 reservaVueloResponseDto.setTipoPago(reservaEntityPersistencia.getTipoPago());
                 reservaVueloResponseDto.setMontoPago(reservaEntityPersistencia.getMontoPago());
                 reservaVueloResponseDto.setFechaHoraReserva(reservaEntityPersistencia.getFechaHoraReserva());
@@ -172,16 +173,18 @@ public class VueloServiceImpl implements IVueloService {
                 return reservaVueloResponseDto;
 
             }
-            throw new UnAuthorizedException("Usuario registrado pero no habilitado para poder realizar reservas. " +
+            throw new UnAuthorizedException("Usuario registrado pero NO AUTORIZADO para poder realizar reservas. " +
                     "Registrese como CLIENTE.");
         }
-        throw new UnAuthorizedException("Usuario no registrado. Registrese como CLIENTE para poder realizar reservas.");
+        throw new NoSuchElementException("Usuario no registrado. Registrese como CLIENTE para poder realizar reservas.");
     }
-/*
+
     @Override
     public List<ReservaDto> obtenerReservasPorNombreUsuario(String nombreUsuarioTipoAgente, String nombreUsuarioTipoCliente) {
         ModelMapper mapper = new ModelMapper();
 
+        //Si no manejamos con un Optional y usuarioAgente no existe, Spring nos lanza un NullPointerException(500 Internal Server Error)
+        //Si lo manejamos con un Optional y usuarioAgente no existe, Spring nos lanza un NoSuchElementException(500 Internal Server Error)
         Optional<UsuarioEntity> usuarioAgente = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoAgente);
 
         if (usuarioAgente.isPresent()) {
@@ -197,50 +200,19 @@ public class VueloServiceImpl implements IVueloService {
                         List<ReservaDto> reservasDto = reservasEntity.stream()
                                 .map(reservaEntity -> mapper.map(reservaEntity, ReservaDto.class))
                                 .toList();
-                        return reservasDto;
-
-                    }
-                    throw new NotFoundException("El usuario al que pretende visualizar sus reservas está registrado " +
-                            "pero no como cliente por lo que no tiene reservas, ya que no las puede hacer.");
-                }
-                throw new NotFoundException("El usuario al que pretende visualizar sus reservas no está registrado.");
-            }
-            throw new UnAuthorizedException("Usuario registrado pero no habilitado para poder visualizar el listado " +
-                    "de reservas. Registrese como Agente de ventas.");
-        }
-        throw new NotFoundException("Usuario no registrado. Registrese como Agente de ventas para poder " +
-                "visualizar el listado de reservas por cliente.");
-    }
-*/
-    @Override
-    public List<ReservaDto> obtenerReservasPorNombreUsuario(String nombreUsuarioTipoAgente, String nombreUsuarioTipoCliente) {
-        ModelMapper mapper = new ModelMapper();
-
-        Optional<UsuarioEntity> usuarioAgente = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoAgente);
-
-
-            //if (usuarioAgente.get().getTipoUsuario().getDescripcion().equalsIgnoreCase("Agente de ventas"))
-            if (usuarioAgente.get().getTipoUsuario().equals(TipoUsuario.AGENTE_DE_VENTAS)) {
-
-                Optional<UsuarioEntity> usuarioCliente = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente);
-
-                if (usuarioCliente.isPresent()) {
-                    if (usuarioCliente.get().getTipoUsuario().equals(TipoUsuario.CLIENTE)) {
-
-                        List<ReservaEntity> reservasEntity = reservaRepository.findByUsuario(usuarioCliente.get());
-                        List<ReservaDto> reservasDto = reservasEntity.stream()
-                                .map(reservaEntity -> mapper.map(reservaEntity, ReservaDto.class))
-                                .toList();
-                        return reservasDto;
+                        return reservasDto; //Responder con otro DTO más específico.
 
                     }
                     throw new EntityNotFoundException("El usuario al que pretende visualizar sus reservas está registrado " +
                             "pero no como cliente por lo que no tiene reservas, ya que no las puede hacer.");
                 }
-                throw new EntityNotFoundException("El usuario al que pretende visualizar sus reservas no está registrado.");
+                throw new NoSuchElementException("El usuario al que pretende visualizar sus reservas no está registrado.");
             }
-            throw new UnAuthorizedException("Usuario registrado pero no habilitado para poder visualizar el listado " +
+            throw new UnAuthorizedException("Usuario registrado pero NO AUTORIZADO para poder visualizar el listado " +
                     "de reservas. Registrese como Agente de ventas.");
         }
+        throw new NoSuchElementException("Usuario no registrado. Registrese como Agente de ventas para poder " +
+                "visualizar el listado de reservas por cliente.");
+    }
 
 }
