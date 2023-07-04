@@ -4,6 +4,7 @@ import com.codoacodo.flysky.demo.Util;
 import com.codoacodo.flysky.demo.dto.request.ReservaVueloDto;
 import com.codoacodo.flysky.demo.dto.response.ReservaDto;
 import com.codoacodo.flysky.demo.dto.response.ReservaVueloResponseDto;
+import com.codoacodo.flysky.demo.dto.response.VentaDto;
 import com.codoacodo.flysky.demo.dto.response.VueloDto;
 import com.codoacodo.flysky.demo.exception.EntityNotFoundException;
 import com.codoacodo.flysky.demo.exception.UnAuthorizedException;
@@ -19,11 +20,9 @@ import com.codoacodo.flysky.demo.repository.IVueloRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class VueloServiceImpl implements IVueloService {
@@ -104,7 +103,7 @@ public class VueloServiceImpl implements IVueloService {
                 //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR DE LO QUE HAY
                 // DISPONIBLE Y NO PARA RELLENAR
                 if (vueloDisponibleReserva.isEmpty()) {
-                    throw new NoSuchElementException("El vuelo que quiere reservar no existe entre los vuelos disponibles.");
+                    throw new NoSuchElementException("El vuelo que quiere reservar no está disponible.");
                 }
 
                 List<ButacaEntity> butacasVueloDisponibleReserva = vueloDisponibleReserva.get().getButacas();
@@ -145,6 +144,7 @@ public class VueloServiceImpl implements IVueloService {
                         .filter(butaca -> butaca.getDisponible().equals(Boolean.FALSE))
                         .toList();
 
+
                 if (butacasNoDisponibles.size() == vueloDisponibleReserva.get().getCapacidad()) {
 
                     VueloEntity vueloDisponibleReservaPersistencia = new VueloEntity();
@@ -166,7 +166,7 @@ public class VueloServiceImpl implements IVueloService {
                 ReservaEntity reservaEntityPersistencia = new ReservaEntity();
                 reservaEntityPersistencia.setTipoPago(reservaVueloDto.getTipoPago());
                 reservaEntityPersistencia.setMontoPago(montoPago);
-                reservaEntityPersistencia.setFechaHoraReserva(LocalDateTime.now());
+                reservaEntityPersistencia.setFechaReserva(LocalDate.now());
                 reservaEntityPersistencia.setUsuario(usuario.get());
                 reservaEntityPersistencia.setVuelo(vueloDisponibleReserva.get());
 
@@ -182,7 +182,7 @@ public class VueloServiceImpl implements IVueloService {
                 reservaVueloResponseDto.setPosicionButaca(butacaPersitencia.getPosicion());  //Por esta linea no utilizamos un ModelMapper.
                 reservaVueloResponseDto.setTipoPago(reservaEntityPersistencia.getTipoPago());
                 reservaVueloResponseDto.setMontoPago(reservaEntityPersistencia.getMontoPago());
-                reservaVueloResponseDto.setFechaHoraReserva(reservaEntityPersistencia.getFechaHoraReserva());
+                reservaVueloResponseDto.setFechaReserva(reservaEntityPersistencia.getFechaReserva());
 
                 return reservaVueloResponseDto;
 
@@ -228,6 +228,39 @@ public class VueloServiceImpl implements IVueloService {
         }
         throw new NoSuchElementException("Usuario no registrado. Registrese como Agente de ventas para poder " +
                 "visualizar el listado de reservas por cliente.");
+    }
+
+    @Override
+    public VentaDto obtenerNumeroVentasIngresosDiarios(String nombreUsuarioTipoAdministrador, LocalDate fecha) {
+
+        Optional<UsuarioEntity> usuario = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoAdministrador);
+
+        if (usuario.isEmpty()) {
+            throw new NoSuchElementException("Usuario no registrado. Registrese como ADMINISTRADOR para poder visualizar " +
+                    "el número de ventas e ingresos generados diarios.");
+        }
+
+        if (!usuario.get().getTipoUsuario().equals(TipoUsuario.ADMINISTRADOR)) {
+            throw new UnAuthorizedException("Usuario registrado pero NO AUTORIZADO para poder visualizar " +
+                    "el número de ventas e ingresos generados diarios. Registrese como ADMINISTRADOR.");
+        }
+
+        List<ReservaEntity> reservasEntity = reservaRepository.findByFechaReserva(fecha);
+
+        if (reservasEntity.isEmpty()) {
+            throw new EntityNotFoundException("No hay reservas realizadas el " + fecha + ".");
+        }
+
+        VentaDto ventaDto = new VentaDto();
+        ventaDto.setFecha(fecha);
+        ventaDto.setCantidadVenta(reservasEntity.size());
+
+        List<Double> montosPago = reservasEntity.stream().map(reservaEntity -> reservaEntity.getMontoPago()).toList();
+
+        ventaDto.setIngreso(montosPago.stream()
+                .reduce(0.0, (accum, montoPago) -> accum + montoPago));
+
+        return ventaDto;
     }
 
 }

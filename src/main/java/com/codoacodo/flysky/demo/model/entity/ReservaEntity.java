@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "reserva")
@@ -24,7 +24,7 @@ public class ReservaEntity {
 
     private double montoPago;
 
-    private LocalDateTime fechaHoraReserva;
+    private LocalDate fechaReserva;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "usuario_id", nullable = false)

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -26,5 +27,5 @@ public class ReservaVueloResponseDto {
 
     private TipoPago tipoPago;
     private double montoPago;
-    private LocalDateTime fechaHoraReserva;
+    private LocalDate fechaReserva;
 }

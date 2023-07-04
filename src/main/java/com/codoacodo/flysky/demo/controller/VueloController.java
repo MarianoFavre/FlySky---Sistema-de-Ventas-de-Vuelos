@@ -1,16 +1,18 @@
 package com.codoacodo.flysky.demo.controller;
 
 import com.codoacodo.flysky.demo.dto.request.ReservaVueloDto;
-import com.codoacodo.flysky.demo.model.enums.TipoUsuario;
 import com.codoacodo.flysky.demo.service.IVueloService;
 import com.codoacodo.flysky.demo.service.VueloServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
+
 @RestController
 @RequestMapping("api/v1/vuelos")
-public class VueloController {
+public class VueloController{
     private IVueloService vueloService;
 
     public VueloController(VueloServiceImpl vueloService) {
@@ -35,5 +37,14 @@ public class VueloController {
         return new ResponseEntity<>(vueloService.obtenerReservasPorNombreUsuario(nombreUsuarioTipoAgente,
                 nombreUsuarioTipoCliente), HttpStatus.OK);
     }
+
+    @GetMapping("/ventas/{nombreUsuarioTipoAdministrador}/{fecha}")
+    public ResponseEntity<?> obtenerNumeroVentasIngresosDiarios(@PathVariable String nombreUsuarioTipoAdministrador,
+                                                                @PathVariable LocalDate fecha) {
+
+        return new ResponseEntity<>(vueloService
+                .obtenerNumeroVentasIngresosDiarios(nombreUsuarioTipoAdministrador, fecha), HttpStatus.OK);
+    }
+
 
 }
