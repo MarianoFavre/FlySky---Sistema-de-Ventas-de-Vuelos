@@ -42,7 +42,19 @@ public class VueloServiceImpl implements IVueloService {
     }
 
     @Override
-    public List<VueloDto> obtenerVuelosDisponibles() {
+    public List<VueloDto> obtenerVuelosDisponibles(String nombreUsuarioTipoCliente) {
+
+        Optional<UsuarioEntity> usuario = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente);
+
+        if (usuario.isEmpty()) {
+            throw new NoSuchElementException("Usuario no registrado. Registrese como CLIENTE para poder visualizar " +
+                    "vuelos disponibles.");
+        }
+
+        if (!usuario.get().getTipoUsuario().equals(TipoUsuario.CLIENTE)) {
+            throw new UnAuthorizedException("Usuario registrado pero NO AUTORIZADO para poder visualizar " +
+                    "vuelos disponibles. Registrese como CLIENTE.");
+        }
 
         List<VueloEntity> vuelosEntity = vueloRepository.findByDisponibleTrue();
 
@@ -63,10 +75,12 @@ public class VueloServiceImpl implements IVueloService {
         return vuelosDto;
     }
 
-    @Override
-    public ReservaVueloResponseDto reservarVuelo(String nombreUsuario, ReservaVueloDto reservaVueloDto) {
 
-        Optional<UsuarioEntity> usuario = usuarioRepository.findByNombreUsuario(nombreUsuario);
+    @Override
+    public ReservaVueloResponseDto reservarVuelo(String nombreUsuarioTipoCliente, ReservaVueloDto
+            reservaVueloDto) {
+
+        Optional<UsuarioEntity> usuario = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente);
 
         if (usuario.isPresent()) {
             //if (usuario.get().getTipoUsuario().getDescripcion().equalsIgnoreCase("Cliente"))
@@ -180,7 +194,8 @@ public class VueloServiceImpl implements IVueloService {
     }
 
     @Override
-    public List<ReservaDto> obtenerReservasPorNombreUsuario(String nombreUsuarioTipoAgente, String nombreUsuarioTipoCliente) {
+    public List<ReservaDto> obtenerReservasPorNombreUsuario(String nombreUsuarioTipoAgente, String
+            nombreUsuarioTipoCliente) {
         ModelMapper mapper = new ModelMapper();
 
         //Si no manejamos con un Optional y usuarioAgente no existe, Spring nos lanza un NullPointerException(500 Internal Server Error)

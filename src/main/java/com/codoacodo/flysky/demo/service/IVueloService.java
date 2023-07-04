@@ -8,9 +8,9 @@ import com.codoacodo.flysky.demo.dto.response.VueloDto;
 import java.util.List;
 
 public interface IVueloService {
-    List<VueloDto> obtenerVuelosDisponibles();
+    List<VueloDto> obtenerVuelosDisponibles(String nombreUsuarioTipoCliente);
 
-    ReservaVueloResponseDto reservarVuelo(String nombreUsuario, ReservaVueloDto reservaVueloDto);
+    ReservaVueloResponseDto reservarVuelo(String nombreUsuarioTipoCliente, ReservaVueloDto reservaVueloDto);
 
     List<ReservaDto> obtenerReservasPorNombreUsuario(String nombreUsuarioTipoAgente, String nombreUsuarioTipoCliente);
 }
