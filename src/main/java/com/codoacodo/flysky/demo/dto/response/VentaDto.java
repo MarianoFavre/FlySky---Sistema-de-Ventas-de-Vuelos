@@ -12,8 +12,9 @@ import java.time.LocalDate;
 @Getter
 @Setter //El DTO es inmutable pero utilizamos el set porque lo necesita el objeto de tipo ModelMapper.
 public class VentaDto {
-    LocalDate fecha;
-    Integer CantidadVenta;
-    Double ingreso;
+
+    private LocalDate fecha;
+    private Integer cantidadVenta;
+    private Double ingreso;
 
 }
