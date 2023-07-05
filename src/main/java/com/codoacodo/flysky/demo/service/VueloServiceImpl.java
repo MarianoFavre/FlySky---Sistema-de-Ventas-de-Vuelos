@@ -265,7 +265,12 @@ public class VueloServiceImpl implements IVueloService {
         List<Double> montosPago = reservasEntity.stream().map(reservaEntity -> reservaEntity.getMontoPago()).toList();
 
         ventaDto.setIngreso(montosPago.stream()
-                .reduce(0.0, (accum, montoPago) -> accum + montoPago));
+                .reduce(0.0, (accum, montoPago) -> accum + montoPago)); //operación de reducción para realizar la suma
+
+        //Otra alternativa using Lambda expression i -> i
+        //ventaDto.setIngreso(montosPago.stream().mapToDouble(i-> i).sum());
+        //Using method reference Double::doubleValue
+        //ventaDto.setIngreso(montosPago.stream().mapToDouble(Double::doubleValue).sum());
 
         return ventaDto;
     }
