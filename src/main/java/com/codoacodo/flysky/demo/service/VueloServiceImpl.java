@@ -170,7 +170,7 @@ public class VueloServiceImpl implements IVueloService {
                 reservaEntityPersistencia.setUsuario(usuario.get());
                 reservaEntityPersistencia.setVuelo(vueloDisponibleReserva.get());
 
-                ReservaEntity reservaEntity = reservaRepository.save(reservaEntityPersistencia);
+                reservaRepository.save(reservaEntityPersistencia);
 
                 ReservaVueloResponseDto reservaVueloResponseDto = new ReservaVueloResponseDto();
                 reservaVueloResponseDto.setNombreUsuario(reservaEntityPersistencia.getUsuario().getNombreUsuario());
