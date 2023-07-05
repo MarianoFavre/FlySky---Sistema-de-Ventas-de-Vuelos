@@ -211,7 +211,12 @@ public class VueloServiceImpl implements IVueloService {
                 if (usuarioCliente.isPresent()) {
                     if (usuarioCliente.get().getTipoUsuario().equals(TipoUsuario.CLIENTE)) {
 
-                        List<ReservaEntity> reservasEntity = reservaRepository.findByUsuario(usuarioCliente.get());
+                        List<ReservaEntity> reservasEntity = usuarioCliente.get().getReserva();
+
+                        //Otra alternativa pero menos eficiente, ya que estoy llamando a dos repositorios para el mismo
+                        // fin, es decir, pido dos veces las reservas.
+                        //List<ReservaEntity> reservasEntity = reservaRepository.findByUsuario(usuarioCliente.get());
+
                         List<ReservaDto> reservasDto = reservasEntity.stream()
                                 .map(reservaEntity -> mapper.map(reservaEntity, ReservaDto.class))
                                 .toList();
@@ -233,14 +238,14 @@ public class VueloServiceImpl implements IVueloService {
     @Override
     public VentaDto obtenerNumeroVentasIngresosDiarios(String nombreUsuarioTipoAdministrador, LocalDate fecha) {
 
-        Optional<UsuarioEntity> usuario = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoAdministrador);
+        Optional<UsuarioEntity> usuarioAdministrador = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoAdministrador);
 
-        if (usuario.isEmpty()) {
+        if (usuarioAdministrador.isEmpty()) {
             throw new NoSuchElementException("Usuario no registrado. Registrese como ADMINISTRADOR para poder visualizar " +
                     "el número de ventas e ingresos generados diarios.");
         }
 
-        if (!usuario.get().getTipoUsuario().equals(TipoUsuario.ADMINISTRADOR)) {
+        if (!usuarioAdministrador.get().getTipoUsuario().equals(TipoUsuario.ADMINISTRADOR)) {
             throw new UnAuthorizedException("Usuario registrado pero NO AUTORIZADO para poder visualizar " +
                     "el número de ventas e ingresos generados diarios. Registrese como ADMINISTRADOR.");
         }
