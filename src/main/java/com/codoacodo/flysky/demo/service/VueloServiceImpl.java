@@ -168,6 +168,8 @@ public class VueloServiceImpl implements IVueloService {
                 reservaEntityPersistencia.setMontoPago(montoPago);
                 reservaEntityPersistencia.setFechaReserva(LocalDate.now());
                 reservaEntityPersistencia.setUsuario(usuario.get());
+                //Podemos utilizar vueloDisponibleReserva ya que fueron seteados al mismo los valores nuevos
+                // de vueloDisponibleReservaPersistencia
                 reservaEntityPersistencia.setVuelo(vueloDisponibleReserva.get());
 
                 reservaRepository.save(reservaEntityPersistencia);
