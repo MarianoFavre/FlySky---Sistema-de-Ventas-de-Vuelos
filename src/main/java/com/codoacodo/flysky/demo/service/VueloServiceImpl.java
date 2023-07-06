@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -255,7 +256,9 @@ public class VueloServiceImpl implements IVueloService {
         List<ReservaEntity> reservasEntity = reservaRepository.findByFechaReserva(fecha);
 
         if (reservasEntity.isEmpty()) {
-            throw new EntityNotFoundException("No hay reservas realizadas el " + fecha + ".");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
+
+            throw new EntityNotFoundException("No hay reservas realizadas el " + fecha.format(formatter)  + ".");
         }
 
         VentaDto ventaDto = new VentaDto();

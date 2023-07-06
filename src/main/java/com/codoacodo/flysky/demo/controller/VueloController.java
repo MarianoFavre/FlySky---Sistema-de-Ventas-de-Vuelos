@@ -19,28 +19,28 @@ public class VueloController{
         this.vueloService = vueloService;
     }
 
-    @GetMapping("disponibles/{nombreUsuarioTipoCliente}")
-    public ResponseEntity<?> verListaDeVuelosDisponibles(@PathVariable String nombreUsuarioTipoCliente) {
+    @GetMapping("disponibles")
+    public ResponseEntity<?> verListaDeVuelosDisponibles(@RequestParam String nombreUsuarioTipoCliente) {
         return new ResponseEntity<>(vueloService.obtenerVuelosDisponibles(nombreUsuarioTipoCliente), HttpStatus.OK);
     }
 
-    @PutMapping("/nuevaReserva/{nombreUsuarioTipoCliente}")
-    public ResponseEntity<?> reservarVuelo(@PathVariable String nombreUsuarioTipoCliente,
+    @PutMapping("/nuevaReserva")
+    public ResponseEntity<?> reservarVuelo(@RequestParam String nombreUsuarioTipoCliente,
                                            @RequestBody ReservaVueloDto reservaVueloDto) {
         return new ResponseEntity<>(vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto), HttpStatus.OK);
     }
 
-    @GetMapping("/reservas/{nombreUsuarioTipoAgente}/{nombreUsuarioTipoCliente}")
-    public ResponseEntity<?> obtenerReservasPorNombreUsuario(@PathVariable String nombreUsuarioTipoAgente,
-                                                  @PathVariable String nombreUsuarioTipoCliente) {
+    @GetMapping("/reservas")
+    public ResponseEntity<?> obtenerReservasPorNombreUsuario(@RequestParam  String nombreUsuarioTipoAgente,
+                                                             @RequestParam  String nombreUsuarioTipoCliente) {
 
         return new ResponseEntity<>(vueloService.obtenerReservasPorNombreUsuario(nombreUsuarioTipoAgente,
                 nombreUsuarioTipoCliente), HttpStatus.OK);
     }
 
-    @GetMapping("/ventas/{nombreUsuarioTipoAdministrador}/{fecha}")
-    public ResponseEntity<?> obtenerNumeroVentasIngresosDiarios(@PathVariable String nombreUsuarioTipoAdministrador,
-                                                                @PathVariable LocalDate fecha) {
+    @GetMapping("/ventas")
+    public ResponseEntity<?> obtenerNumeroVentasIngresosDiarios(@RequestParam  String nombreUsuarioTipoAdministrador,
+                                                                @RequestParam  LocalDate fecha) {
 
         return new ResponseEntity<>(vueloService
                 .obtenerNumeroVentasIngresosDiarios(nombreUsuarioTipoAdministrador, fecha), HttpStatus.OK);

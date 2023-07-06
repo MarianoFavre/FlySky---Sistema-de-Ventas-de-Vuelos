@@ -19,8 +19,6 @@ import java.util.List;
 @Setter //El DTO es inmutable pero utilizamos el set porque lo necesita el objeto de tipo ModelMapper.
 public class ReservaVueloDto {
 
-    //private Integer numeroVuelo;
-
     private String aerolinea;
     private LocalDateTime fechaHoraPartida;
     private LocalDateTime fechaHoraLlegada;
@@ -29,7 +27,6 @@ public class ReservaVueloDto {
 
     private String posicionButaca;
 
-    //User Story 3
     private TipoPago tipoPago;
 
 }
