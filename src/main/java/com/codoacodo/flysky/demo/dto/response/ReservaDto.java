@@ -24,5 +24,7 @@ public class ReservaDto {
 
     private UsuarioDto usuario;
 
-    private VueloDto vuelo;
+    private VueloReservaDto vuelo;
+
+    private String posicionButaca;
 }

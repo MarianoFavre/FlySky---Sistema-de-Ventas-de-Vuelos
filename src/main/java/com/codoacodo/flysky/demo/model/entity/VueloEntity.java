@@ -19,15 +19,7 @@ public class VueloEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //private Integer numeroVuelo;
-
-    @OneToMany(mappedBy = "vuelo", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<ReservaEntity> reservas;
-
-    @OneToMany(mappedBy = "vuelo", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<ButacaEntity> butacas;
+    private Integer numeroVuelo;
 
     private Boolean disponible;
     private Integer capacidad;
@@ -37,4 +29,10 @@ public class VueloEntity {
     private Double precio;
     private String origen;
     private String destino;
+
+    @OneToMany(mappedBy = "vuelo", cascade = CascadeType.ALL)
+    private List<ReservaEntity> reservas;
+
+    @OneToMany(mappedBy = "vuelo", cascade = CascadeType.ALL)
+    private List<ButacaEntity> butacas;
 }

@@ -1,31 +1,22 @@
 package com.codoacodo.flysky.demo.dto.response;
 
-import com.codoacodo.flysky.demo.model.enums.TipoPago;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter //El DTO es inmutable pero utilizamos el set porque lo necesita el objeto de tipo ModelMapper.
-public class ReservaVueloResponseDto {
+public class VueloReservaDto {
 
-    private String nombreUsuario;
-
+    private Integer numeroVuelo;
     private String aerolinea;
     private LocalDateTime fechaHoraPartida;
     private LocalDateTime fechaHoraLlegada;
     private String origen;
     private String destino;
 
-    private String posicionButaca;
-
-    private TipoPago tipoPago;
-    private double montoPago;
-    private LocalDate fechaReserva;
 }

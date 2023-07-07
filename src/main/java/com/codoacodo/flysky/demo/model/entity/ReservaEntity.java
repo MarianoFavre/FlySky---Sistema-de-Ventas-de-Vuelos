@@ -36,4 +36,6 @@ public class ReservaEntity {
     @JsonBackReference
     private VueloEntity vuelo;
 
+    private String posicionButaca;
+
 }
