@@ -32,6 +32,6 @@ public class VueloEntity {
     @OneToMany(mappedBy = "vuelo", cascade = CascadeType.ALL)
     private List<ReservaEntity> reservas;
 
-    @OneToMany(mappedBy = "vuelo", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "vuelo", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ButacaEntity> butacas;
 }
