@@ -16,7 +16,7 @@ public class VueloDto {
 
     private Integer numeroVuelo;
     private Boolean disponible;
-    private Long capacidad;
+    private Integer capacidad;
     private String aerolinea;
     private LocalDateTime fechaHoraPartida;
     private LocalDateTime fechaHoraLlegada;
