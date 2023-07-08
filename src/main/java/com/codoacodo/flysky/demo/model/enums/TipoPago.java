@@ -15,4 +15,4 @@ public enum TipoPago {
     public String getDescripcion() {
         return descripcion;
     }
-    }
+}
