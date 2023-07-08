@@ -25,11 +25,11 @@ import java.util.*;
 
 @Service
 public class VueloServiceImpl implements IVueloService {
-    private IVueloRepository vueloRepository;
-    private IUsuarioRepository usuarioRepository;
-    private IButacaRepository butacaRepository;
+    private final IVueloRepository vueloRepository;
+    private final IUsuarioRepository usuarioRepository;
+    private final IButacaRepository butacaRepository;
 
-    private IReservaRepository reservaRepository;
+    private final IReservaRepository reservaRepository;
 
     public VueloServiceImpl(IVueloRepository vueloRepository, IUsuarioRepository usuarioRepository,
                             IButacaRepository butacaRepository, IReservaRepository reservaRepository) {
@@ -65,7 +65,7 @@ public class VueloServiceImpl implements IVueloService {
         ModelMapper mapper = new ModelMapper();
 
         List<VueloDto> vuelosDto = new ArrayList<>();
-        vuelosEntity.stream().forEach(vueloEntity -> vuelosDto.add(mapper.map(vueloEntity, VueloDto.class)));
+        vuelosEntity.forEach(vueloEntity -> vuelosDto.add(mapper.map(vueloEntity, VueloDto.class)));
 
         //Otra alternativa
         //List<VueloDto> vuelosDto = vuelosEntity.stream().map(vueloEntity-> mapper.map(vueloEntity, VueloDto.class)).toList();
@@ -144,9 +144,8 @@ public class VueloServiceImpl implements IVueloService {
                         .save(crearReservaEntityPersistencia(reservaVueloDto, vueloDisponibleReserva, usuario, butacaEntity));
 
                 ModelMapper mapper = new ModelMapper();
-                ReservaDto reservaDto = mapper.map(reservaEntity, ReservaDto.class);
 
-                return reservaDto;
+                return mapper.map(reservaEntity, ReservaDto.class);
 
             }
             throw new UnAuthorizedException("Usuario registrado pero NO AUTORIZADO para poder realizar reservas. " +
@@ -179,10 +178,9 @@ public class VueloServiceImpl implements IVueloService {
                         // fin, es decir, pido dos veces las reservas.
                         //List<ReservaEntity> reservasEntity = reservaRepository.findByUsuario(usuarioCliente.get());
 
-                        List<ReservaDto> reservasDto = reservasEntity.stream()
+                        return reservasEntity.stream()
                                 .map(reservaEntity -> mapper.map(reservaEntity, ReservaDto.class))
                                 .toList();
-                        return reservasDto; //Responder con otro DTO más específico.
 
                     }
                     throw new EntityNotFoundException("El usuario al que pretende visualizar sus reservas está registrado " +

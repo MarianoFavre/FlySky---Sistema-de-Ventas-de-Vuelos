@@ -1,7 +1,6 @@
 package com.codoacodo.flysky.demo.model.entity;
 
 import com.codoacodo.flysky.demo.model.enums.TipoUsuario;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +26,5 @@ public class UsuarioEntity {
     private Integer telefono;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<ReservaEntity> reserva;
 }

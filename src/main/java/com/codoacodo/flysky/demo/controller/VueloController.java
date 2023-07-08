@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("api/v1/vuelos")
 public class VueloController{
-    private IVueloService vueloService;
+    private final IVueloService vueloService;
 
     public VueloController(VueloServiceImpl vueloService) {
         this.vueloService = vueloService;
