@@ -21,7 +21,7 @@ public class VueloEntity {
     private Integer numeroVuelo;
 
     private Boolean disponible;
-    private Integer capacidad;
+    private Long capacidad;
     private String aerolinea;
     private LocalDateTime fechaHoraPartida;
     private LocalDateTime fechaHoraLlegada;
