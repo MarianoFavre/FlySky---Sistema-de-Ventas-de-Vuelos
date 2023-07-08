@@ -78,80 +78,77 @@ public class VueloServiceImpl implements IVueloService {
     public ReservaDto reservarVuelo(String nombreUsuarioTipoCliente, ReservaVueloDto
             reservaVueloDto) {
 
-        Optional<UsuarioEntity> usuario = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente);
+        //Otra alternativa para tratar un Optional y lanzar una excepción.
+        UsuarioEntity usuario = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente)
+                .orElseThrow(() -> new NoSuchElementException("Usuario no registrado. Registrese como CLIENTE para " +
+                        "poder realizar reservas."));
 
-        if (usuario.isPresent()) {
-            //if (usuario.get().getTipoUsuario().getDescripcion().equalsIgnoreCase("Cliente"))
-            if (usuario.get().getTipoUsuario().equals(TipoUsuario.CLIENTE)) {
+        //if (usuario.getTipoUsuario().getDescripcion().equalsIgnoreCase("Cliente"))
+        if (usuario.getTipoUsuario().equals(TipoUsuario.CLIENTE)) {
 
-                List<VueloEntity> vuelosDisponibles = vueloRepository.findByDisponibleTrue();
-                //si la disponibilidad de todos los registro de la tabla vuelo es false, la base de datos va a retornar
-                // una lista de vuelos vacía sin lanzar una excepción.
-                if (vuelosDisponibles.isEmpty()) {
-                    throw new EntityNotFoundException("No hay vuelos disponibles en este momento. Intente más tarde.");
-                }
-
-                Optional<VueloEntity> vueloDisponibleReserva = vuelosDisponibles.stream().filter(vueloDisponible ->
-                        vueloDisponible.getNumeroVuelo().equals(reservaVueloDto.getNumeroVuelo()) &
-                                vueloDisponible.getAerolinea().equalsIgnoreCase(reservaVueloDto.getAerolinea()) &
-                                vueloDisponible.getFechaHoraPartida().equals(reservaVueloDto.getFechaHoraPartida()) &
-                                vueloDisponible.getFechaHoraLlegada().equals(reservaVueloDto.getFechaHoraLlegada()) &
-                                vueloDisponible.getOrigen().equalsIgnoreCase(reservaVueloDto.getOrigen()) &
-                                vueloDisponible.getDestino().equalsIgnoreCase(reservaVueloDto.getDestino())
-                ).findFirst();
-                //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR DE LO QUE HAY
-                // DISPONIBLE Y NO PARA RELLENAR
-                if (vueloDisponibleReserva.isEmpty()) {
-                    throw new NoSuchElementException("El vuelo que quiere reservar no está disponible.");
-                }
-
-                List<ButacaEntity> butacasVueloDisponibleReserva = vueloDisponibleReserva.get().getButacas();
-
-                if (butacasVueloDisponibleReserva.isEmpty()) {
-                    throw new EntityNotFoundException("El vuelo que quiere reservar no tiene asignadas butacas.");
-                }
-
-                Optional<ButacaEntity> butacaVueloDisponibleReserva = butacasVueloDisponibleReserva.stream()
-                        .filter(butaca -> reservaVueloDto.getPosicionButaca().equals(butaca.getPosicion()))
-                        .findFirst();
-                //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR DE LO QUE HAY
-                // DISPONIBLE Y NO PARA RELLENAR
-                if (butacaVueloDisponibleReserva.isEmpty()) {
-                    throw new NoSuchElementException("La posición de la butaca seleccionada no pertenece " +
-                            "al vuelo.");
-                }
-                //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR DE LO QUE HAY
-                // DISPONIBLE Y NO PARA RELLENAR
-                if (!butacaVueloDisponibleReserva.get().getDisponible()) {
-                    throw new EntityNotFoundException("La posición de la butaca seleccionada no está disponible.");
-                }
-
-                //Modificamos por FALSE la disponibilidad de la butaca reservada.
-
-                ButacaEntity butacaEntity = butacaRepository.save(crearButacaPersistencia(butacaVueloDisponibleReserva));
-
-                //Modificamos por FALSE la disponibilidad del vuelo si todas las butacas han sido reservadas.
-                List<ButacaEntity> butacasNoDisponibles = butacasVueloDisponibleReserva.stream()
-                        .filter(butaca -> butaca.getDisponible().equals(Boolean.FALSE))
-                        .toList();
-
-                if (butacasNoDisponibles.size() == vueloDisponibleReserva.get().getCapacidad()) {
-
-                   vueloRepository.save(crearVueloDisponibleReservaPersistencia(vueloDisponibleReserva, reservaVueloDto));
-                }
-
-                ReservaEntity reservaEntity = reservaRepository
-                        .save(crearReservaEntityPersistencia(reservaVueloDto, vueloDisponibleReserva, usuario, butacaEntity));
-
-                ModelMapper mapper = new ModelMapper();
-
-                return mapper.map(reservaEntity, ReservaDto.class);
-
+            List<VueloEntity> vuelosDisponibles = vueloRepository.findByDisponibleTrue();
+            //si la disponibilidad de todos los registro de la tabla vuelo es false, la base de datos va a retornar
+            // una lista de vuelos vacía sin lanzar una excepción.
+            if (vuelosDisponibles.isEmpty()) {
+                throw new EntityNotFoundException("No hay vuelos disponibles en este momento. Intente más tarde.");
             }
-            throw new UnAuthorizedException("Usuario registrado pero NO AUTORIZADO para poder realizar reservas. " +
-                    "Registrese como CLIENTE.");
+
+            VueloEntity vueloReserva = vuelosDisponibles.stream().filter(vueloDisponible ->
+                    vueloDisponible.getNumeroVuelo().equals(reservaVueloDto.getNumeroVuelo()) &
+                            vueloDisponible.getAerolinea().equalsIgnoreCase(reservaVueloDto.getAerolinea()) &
+                            vueloDisponible.getFechaHoraPartida().equals(reservaVueloDto.getFechaHoraPartida()) &
+                            vueloDisponible.getFechaHoraLlegada().equals(reservaVueloDto.getFechaHoraLlegada()) &
+                            vueloDisponible.getOrigen().equalsIgnoreCase(reservaVueloDto.getOrigen()) &
+                            vueloDisponible.getDestino().equalsIgnoreCase(reservaVueloDto.getDestino())
+            ).findFirst()
+                    .orElseThrow(()-> new NoSuchElementException("El vuelo que quiere reservar no está disponible."));
+            //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR DE LO QUE HAY
+            // DISPONIBLE Y NO PARA RELLENAR.
+
+            List<ButacaEntity> butacasVueloReserva = vueloReserva.getButacas();
+
+            if (butacasVueloReserva.isEmpty()) {
+                throw new EntityNotFoundException("El vuelo que quiere reservar no tiene asignadas butacas.");
+            }
+
+            ButacaEntity butacaVueloReserva = butacasVueloReserva.stream()
+                    .filter(butaca -> reservaVueloDto.getPosicionButaca().equals(butaca.getPosicion()))
+                    .findFirst()
+                    .orElseThrow(()-> new NoSuchElementException("La posición de la butaca seleccionada no pertenece " +
+                            "al vuelo.") );
+            //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR DE LO QUE HAY
+            // DISPONIBLE Y NO PARA RELLENAR
+
+            if (!butacaVueloReserva.getDisponible()) {
+                throw new EntityNotFoundException("La posición de la butaca seleccionada no está disponible.");
+            }
+
+            //Modificamos por FALSE la disponibilidad de la butaca reservada.
+            butacaVueloReserva.setDisponible(Boolean.FALSE);
+            ButacaEntity butacaEntity = butacaRepository.save(butacaVueloReserva);
+
+            //Modificamos por FALSE la disponibilidad del vuelo si todas las butacas han sido reservadas.
+            Long cantidadButacasOcupadas = butacasVueloReserva.stream()
+                    .filter(butaca -> butaca.getDisponible().equals(Boolean.FALSE))
+                    .count();
+
+            if (cantidadButacasOcupadas ==  vueloReserva.getCapacidad()) {
+
+                vueloReserva.setDisponible(Boolean.FALSE);
+                vueloRepository.save(vueloReserva);
+            }
+
+            ReservaEntity reservaEntity = reservaRepository
+                    .save(crearReservaEntityPersistencia(reservaVueloDto, vueloReserva, usuario, butacaEntity));
+
+            ModelMapper mapper = new ModelMapper();
+
+            return mapper.map(reservaEntity, ReservaDto.class);
+
         }
-        throw new NoSuchElementException("Usuario no registrado. Registrese como CLIENTE para poder realizar reservas.");
+        throw new UnAuthorizedException("Usuario registrado pero NO AUTORIZADO para poder realizar reservas. " +
+                "Registrese como CLIENTE.");
+
     }
 
     @Override
@@ -159,7 +156,7 @@ public class VueloServiceImpl implements IVueloService {
             nombreUsuarioTipoCliente) {
         ModelMapper mapper = new ModelMapper();
 
-        //Si no manejamos con un Optional y usuarioAgente no existe, Spring nos lanza un NullPointerException(500 Internal Server Error)
+        //Si no lo manejamos con un Optional y usuarioAgente no existe, Spring nos lanza un NullPointerException(500 Internal Server Error)
         //Si lo manejamos con un Optional y usuarioAgente no existe, Spring nos lanza un NoSuchElementException(500 Internal Server Error)
         Optional<UsuarioEntity> usuarioAgente = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoAgente);
 
@@ -234,45 +231,16 @@ public class VueloServiceImpl implements IVueloService {
 
         return ventaDto;
     }
-
-    private ButacaEntity crearButacaPersistencia(Optional<ButacaEntity> butacaVueloDisponibleReserva) {
-        ButacaEntity butacaPersitencia = new ButacaEntity();
-        butacaPersitencia.setId(butacaVueloDisponibleReserva.get().getId());
-        butacaPersitencia.setDisponible(Boolean.FALSE);
-        butacaPersitencia.setPosicion(butacaVueloDisponibleReserva.get().getPosicion());
-        butacaPersitencia.setVuelo(butacaVueloDisponibleReserva.get().getVuelo());
-
-        return butacaPersitencia;
-    }
-
-    private VueloEntity crearVueloDisponibleReservaPersistencia(Optional<VueloEntity> vueloDisponibleReserva, ReservaVueloDto reservaVueloDto) {
-        VueloEntity vueloDisponibleReservaPersistencia = new VueloEntity();
-        vueloDisponibleReservaPersistencia.setId(vueloDisponibleReserva.get().getId());
-        vueloDisponibleReservaPersistencia.setNumeroVuelo(reservaVueloDto.getNumeroVuelo());
-        vueloDisponibleReservaPersistencia.setDisponible(Boolean.FALSE);
-        vueloDisponibleReservaPersistencia.setCapacidad(vueloDisponibleReserva.get().getCapacidad());
-        vueloDisponibleReservaPersistencia.setAerolinea(vueloDisponibleReserva.get().getAerolinea());
-        vueloDisponibleReservaPersistencia.setFechaHoraPartida(vueloDisponibleReserva.get().getFechaHoraPartida());
-        vueloDisponibleReservaPersistencia.setFechaHoraLlegada(vueloDisponibleReserva.get().getFechaHoraLlegada());
-        vueloDisponibleReservaPersistencia.setPrecio(vueloDisponibleReserva.get().getPrecio());
-        vueloDisponibleReservaPersistencia.setOrigen(vueloDisponibleReserva.get().getOrigen());
-        vueloDisponibleReservaPersistencia.setDestino(vueloDisponibleReserva.get().getDestino());
-
-        return vueloDisponibleReservaPersistencia;
-    }
-
     private ReservaEntity crearReservaEntityPersistencia(ReservaVueloDto reservaVueloDto,
-                                                         Optional<VueloEntity> vueloDisponibleReserva,
-                                                         Optional<UsuarioEntity> usuario, ButacaEntity butacaEntity) {
+                                                         VueloEntity vueloReserva,
+                                                         UsuarioEntity usuario, ButacaEntity butacaEntity) {
         ReservaEntity reservaEntityPersistencia = new ReservaEntity();
         reservaEntityPersistencia.setTipoPago(reservaVueloDto.getTipoPago());
         reservaEntityPersistencia.setMontoPago
-                (Util.montoAPagar(reservaVueloDto.getTipoPago(), vueloDisponibleReserva.get().getPrecio()));
+                (Util.montoAPagar(reservaVueloDto.getTipoPago(), vueloReserva.getPrecio()));
         reservaEntityPersistencia.setFechaReserva(LocalDate.now());
-        reservaEntityPersistencia.setUsuario(usuario.get());
-        //Podemos utilizar vueloDisponibleReserva ya que sus valores fueron seteados a
-        // vueloDisponibleReservaPersistencia, el cual no podemos utilizar porque está dentro de un if.
-        reservaEntityPersistencia.setVuelo(vueloDisponibleReserva.get());
+        reservaEntityPersistencia.setUsuario(usuario);
+        reservaEntityPersistencia.setVuelo(vueloReserva);
         reservaEntityPersistencia.setPosicionButaca(butacaEntity.getPosicion());
 
         return reservaEntityPersistencia;

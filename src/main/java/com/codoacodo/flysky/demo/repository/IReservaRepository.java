@@ -11,6 +11,8 @@ import java.util.List;
 
 @Repository
 public interface IReservaRepository extends JpaRepository<ReservaEntity, Long> {
-     List<ReservaEntity> findByUsuario(UsuarioEntity usuarioEntity);
+
+     // No utilizada ya que fue obtenido de forma más eficiente llamado a un solo repositorio.
+     //List<ReservaEntity> findByUsuario(UsuarioEntity usuarioEntity);
      List<ReservaEntity> findByFechaReserva(LocalDate fecha);
 }
