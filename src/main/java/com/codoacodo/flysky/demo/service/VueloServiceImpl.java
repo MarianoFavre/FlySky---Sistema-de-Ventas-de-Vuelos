@@ -181,12 +181,13 @@ public class VueloServiceImpl implements IVueloService {
 
                     }
                     throw new EntityNotFoundException("El usuario al que pretende visualizar sus reservas está registrado " +
-                            "pero no como cliente por lo que no tiene reservas, ya que no las puede hacer.");
+                            "como " + usuarioAgente.get().getTipoUsuario() + " por lo que no tiene reservas, ya que no " +
+                            "las puede hacer.");
                 }
                 throw new NoSuchElementException("El usuario al que pretende visualizar sus reservas no está registrado.");
             }
-            throw new UnAuthorizedException("Usuario registrado pero NO AUTORIZADO para poder visualizar el listado " +
-                    "de reservas. Registrese como Agente de ventas.");
+            throw new UnAuthorizedException("Usuario registrado como " + usuarioAgente.get().getTipoUsuario() + ". Registrese " +
+                    "como Agente de ventas para poder visualizar el listado de reservas.");
         }
         throw new NoSuchElementException("Usuario no registrado. Registrese como Agente de ventas para poder " +
                 "visualizar el listado de reservas por cliente.");
