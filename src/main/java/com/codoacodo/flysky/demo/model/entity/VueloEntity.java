@@ -36,4 +36,9 @@ public class VueloEntity {
 
     @OneToMany(mappedBy = "vuelo", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ButacaEntity> butacas;
+
+    //Eager: realiza un Join entre la tabla Vuelo y Butaca, para poder cargar ambos objetos en el momento de obtener
+    // el Vuelo desde la Base de datos.
+    //Lazy: al traer un Vuelo, no nos traerá aún las Butacas asociada. Al traer el Vuelo se realizará un SELECT y otro
+    // cuando se desee obtener la información de la Butacas.
 }
