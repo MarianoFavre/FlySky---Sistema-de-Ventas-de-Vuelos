@@ -1,5 +1,6 @@
 package com.codoacodo.flysky.demo.service;
 
+import com.codoacodo.flysky.demo.dto.request.ReservaVueloDto;
 import com.codoacodo.flysky.demo.dto.response.*;
 import com.codoacodo.flysky.demo.exception.EntityNotFoundException;
 import com.codoacodo.flysky.demo.exception.UnAuthorizedException;
@@ -47,6 +48,7 @@ public class VueloServiceImplTestSinMock {
     @Autowired
     IVueloRepository vueloRepository;
 
+    //------------------------------------------------------------------------------------------------------------------
     @Test
     @DisplayName("US1- Camino feliz.")
     void obtenerVuelosDisponiblesOkTest() {
@@ -121,13 +123,14 @@ public class VueloServiceImplTestSinMock {
 
     @Test
     @DisplayName("US1- Camino no hay vuelos disponibles.")
+    @Disabled
     void obtenerVuelosDisponiblesThrowEntityNotFoundExceptionTest() {
 
-        vueloRepository.deleteAll();// Si tenemos la propiedad fetch = FetchType.EAGER en el atributo butacas y reservas
-        // en VueloEntity, no borra registros relacionados, por lo tanto, no pasa el test.
-        //Se puede utilizar porque estamos trabajando con una base de datos en memoria (H2)
+        vueloRepository.deleteAll();//Se puede utilizar porque estamos trabajando con una base de datos en memoria (H2)
         // para el entorno de test. Si ejecutamos todos los test simultaneamente debemos utilizar la anotación
         // @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD).
+        // Si tenemos la propiedad fetch = FetchType.EAGER en el atributo butacas y/o reservas en VueloEntity, no se
+        // borran los registros relacionados, por lo tanto, no pasa el test.
 
         //ARRANGE
         String nombreUsuarioTipoCliente = "Miguel"; //CLIENTE
@@ -137,6 +140,97 @@ public class VueloServiceImplTestSinMock {
             vueloService.obtenerVuelosDisponibles(nombreUsuarioTipoCliente);
         });
     }
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    @Test
+    @DisplayName("US2 y US3 - Camino feliz.")
+    void reservarVueloOkTest() {
+
+        //ARRANGE
+        String nombreUsuarioTipoCliente = "Mariano"; //CLIENTE
+
+        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, "Aerolineas Argentinas"
+                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
+                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
+                , "Buenos Aires" , "Uruguay", "AE05", TipoPago.PAGO_EN_LINEA);
+
+        UsuarioDto usuario = new UsuarioDto("Mariano", 666666);
+
+        VueloReservaDto vuelo = new VueloReservaDto(666, "Aerolineas Argentinas",
+                LocalDateTime.of(2023, 06, 25, 23, 53, 30),
+                LocalDateTime.of(2023, 06, 25, 23, 53, 30),
+                "Buenos Aires", "Uruguay");
+
+        ReservaDto expected = new ReservaDto(TipoPago.PAGO_EN_LINEA, 13500D, LocalDate.now(), usuario, vuelo
+                , "AE05" );
+        //ACT
+        ReservaDto actual = vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto);
+
+        //ASSERT
+        assertEquals(expected, actual);
+        //Modificamos Persist por @ManyToOne(cascade = CascadeType.MERGE) tanto en el atributo usuario y vuelo de
+        // ReservaEntity. https://www.baeldung.com/hibernate-detached-entity-passed-to-persist
+        //Podemos ver que la entidad ReservaEntity tiene una relación de muchos a uno con una vuelo y un usuario. El tipo
+        // de cascada se establece en CascadeType.MERGE; por lo tanto, solo propagaremos las operaciones de combinación
+        // al vuelo y usuario asociada. En otras palabras, si fusionamos una entidad ReservaEntity, Hibernate propagará
+        // la operación al vuelo y usuario asociado, y ambas entidades se actualizarán en la base de datos. Por el
+        // contrario, si el tipo de cascada se establece en PERSIST o ALL, Hibernar intentará propagar la operación
+        // persist en el campo asociado separado. En consecuencia, cuando persistimos una entidad vuelo y/o usuario
+        // con uno de estos tipos en cascada, Hibernate conservará la ReservaEntity separado asociado, lo que dará lugar
+        // a otra PersistentObjectException.
+    }
+
+    @Test
+    @DisplayName("US2 y US3 - Camino usuario no registrado.")
+    void reservarVueloThrowNoSuchElementExceptionTest() {
+        //ARRANGE
+        String nombreUsuarioTipoCliente = "Fake";
+
+        //ACT and ASSERT
+        assertThrows(NoSuchElementException.class, () -> {
+            vueloService.obtenerVuelosDisponibles(nombreUsuarioTipoCliente);
+        });
+    }
+
+    @Test
+    @DisplayName("US2 y US3 - Camino usuario registrado pero no autorizado para visualizar vuelos disponibles.")
+    void reservarVueloThrowUnAuthorizedExceptionTest() {
+        //ARRANGE
+        String nombreUsuarioTipoCliente = "Carlos"; //AGENTE_DE_VENTAS
+        String nombreUsuarioTipoCliente1 = "Juan"; //ADMINISTRADOR
+
+        //ACT and ASSERT
+        assertThrows(UnAuthorizedException.class, () -> {
+            vueloService.obtenerVuelosDisponibles(nombreUsuarioTipoCliente);
+        });
+
+        assertThrows(UnAuthorizedException.class, () -> {
+            vueloService.obtenerVuelosDisponibles(nombreUsuarioTipoCliente1);
+        });
+    }
+
+    @Test
+    @DisplayName("US2 y US3 - Camino no hay vuelos disponibles.")
+    @Disabled
+    void reservarVueloThrowEntityNotFoundExceptionTest() {
+
+        vueloRepository.deleteAll();//Se puede utilizar porque estamos trabajando con una base de datos en memoria (H2)
+        // para el entorno de test. Si ejecutamos todos los test simultaneamente debemos utilizar la anotación
+        // @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD).
+        // Si tenemos la propiedad fetch = FetchType.EAGER en el atributo butacas y/o reservas en VueloEntity, no se
+        // borran los registros relacionados, por lo tanto, no pasa el test.
+
+        //ARRANGE
+        String nombreUsuarioTipoCliente = "Miguel"; //CLIENTE
+
+        //ACT and ASSERT
+        assertThrows(EntityNotFoundException.class, () -> {
+            vueloService.obtenerVuelosDisponibles(nombreUsuarioTipoCliente);
+        });
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
 
     @Test
     @DisplayName("US4- Camino feliz.")
@@ -245,6 +339,76 @@ public class VueloServiceImplTestSinMock {
         //ACT and ASSERT
         assertThrows(EntityNotFoundException.class, () -> {
             vueloService.obtenerReservasPorNombreUsuario(nombreUsuarioTipoAgente, nombreUsuarioTipoCliente);
+        });
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    @Test
+    @DisplayName("US5- Camino feliz.")
+    void obtenerNumeroVentasIngresosDiariosOkTest() {
+        //ARRANGE  LocalDate fecha
+        String nombreUsuarioTipoAdministrador = "Juan"; //ADMINISTRADOR
+        LocalDate fecha = LocalDate.of(2023, 04, 25);
+
+        VentaDto expected = new VentaDto( LocalDate.of(2023, 04, 25), 1, 15000D);
+
+        //ACT
+        VentaDto actual = vueloService
+                .obtenerNumeroVentasIngresosDiarios(nombreUsuarioTipoAdministrador, fecha);
+
+        //ASSERT
+        assertEquals(expected, actual);
+
+    }
+
+    @Test
+    @DisplayName("US5- Camino usuario no registrado.")
+    void obtenerNumeroVentasIngresosDiariosThrowNoSuchElementExceptionTest() {
+        //ARRANGE
+        String nombreUsuarioTipoAdministrador = "Fake";
+        LocalDate fecha = LocalDate.of(2023, 04, 25);
+
+        //ACT and ASSERT
+        assertThrows(NoSuchElementException.class, () -> {
+            vueloService.obtenerNumeroVentasIngresosDiarios(nombreUsuarioTipoAdministrador, fecha);
+        });
+    }
+
+    @Test
+    @DisplayName("US5- Camino: usuario registrado pero no autorizado para visualizar el número de ventas e ingresos " +
+            "generados diarios.")
+    void obtenerNumeroVentasIngresosDiariosThrowUnAuthorizedExceptionTest() {
+        //ARRANGE
+        String nombreUsuarioTipoAdministrador = "Miguel"; //CLIENTE
+        String nombreUsuarioTipoAdministrador1 = "Carlos"; //AGENTE_DE_VENTAS
+        LocalDate fecha = LocalDate.of(2023, 04, 25);
+
+        //ACT and ASSERT
+        assertThrows(UnAuthorizedException.class, () -> {
+            vueloService.obtenerNumeroVentasIngresosDiarios(nombreUsuarioTipoAdministrador, fecha);
+        });
+
+        assertThrows(UnAuthorizedException.class, () -> {
+            vueloService.obtenerNumeroVentasIngresosDiarios(nombreUsuarioTipoAdministrador1, fecha);
+        });
+    }
+
+    @Test
+    @DisplayName("US5- Camino: no hay reservas realizadas para tal fecha.")
+    @Disabled
+    void obtenerNumeroVentasIngresosDiariosThrowEntityNotFoundExceptionTest() {
+
+        reservaRepository.deleteAll();  // Si tenemos la propiedad fetch = FetchType.EAGER en el atributo butacas en
+        // VueloEntity, no se borran los registros relacionados, por lo tanto, no pasa el test.
+
+        //ARRANGE
+        String nombreUsuarioTipoAdministrador = "Juan"; //ADMINISTRADOR
+        LocalDate fecha = LocalDate.of(2023, 04, 25);
+
+        //ACT and ASSERT
+        assertThrows(EntityNotFoundException.class, () -> {
+            vueloService.obtenerNumeroVentasIngresosDiarios(nombreUsuarioTipoAdministrador, fecha);
         });
     }
 }

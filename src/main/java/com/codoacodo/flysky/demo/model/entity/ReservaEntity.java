@@ -25,11 +25,11 @@ public class ReservaEntity {
 
     private LocalDate fechaReserva;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "usuario_id", referencedColumnName="id", nullable = false)
     private UsuarioEntity usuario;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "vuelo_id", referencedColumnName="id", nullable = false)
     private VueloEntity vuelo;
 
