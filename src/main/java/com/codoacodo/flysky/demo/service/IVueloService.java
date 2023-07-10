@@ -16,4 +16,6 @@ public interface IVueloService {
     List<ReservaDto> obtenerReservasPorNombreUsuario(String nombreUsuarioTipoAgente, String nombreUsuarioTipoCliente);
 
     VentaDto obtenerNumeroVentasIngresosDiarios(String nombreUsuarioTipoAdministrador, LocalDate fecha);
+
+    void borrarVuelos(Long id);
 }

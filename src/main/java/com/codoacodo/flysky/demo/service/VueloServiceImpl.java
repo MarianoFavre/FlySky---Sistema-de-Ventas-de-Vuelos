@@ -175,6 +175,11 @@ public class VueloServiceImpl implements IVueloService {
                         // fin, es decir, pido dos veces las reservas.
                         //List<ReservaEntity> reservasEntity = reservaRepository.findByUsuario(usuarioCliente.get());
 
+                        if(reservasEntity.isEmpty()){
+                            throw new EntityNotFoundException("No hay reservas realizadas por el usuario "
+                                    + nombreUsuarioTipoCliente + ".");
+                        }
+
                         return reservasEntity.stream()
                                 .map(reservaEntity -> mapper.map(reservaEntity, ReservaDto.class))
                                 .toList();
@@ -235,6 +240,11 @@ public class VueloServiceImpl implements IVueloService {
         */
 
         return ventaDto;
+    }
+
+    @Override
+    public void borrarVuelos(Long id) {
+        vueloRepository.deleteById(id);
     }
 
     private ReservaEntity crearReservaEntityPersistencia(ReservaVueloDto reservaVueloDto,

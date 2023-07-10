@@ -25,6 +25,6 @@ public class UsuarioEntity {
 
     private Integer telefono;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ReservaEntity> reserva;
 }

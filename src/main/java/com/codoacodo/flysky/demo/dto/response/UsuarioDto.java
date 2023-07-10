@@ -2,10 +2,7 @@ package com.codoacodo.flysky.demo.dto.response;
 
 
 import com.codoacodo.flysky.demo.model.enums.TipoUsuario;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -13,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter //El DTO es inmutable pero utilizamos el set porque lo necesita el objeto de tipo ModelMapper.
+@EqualsAndHashCode
 public class UsuarioDto {
 
     private String nombreUsuario;

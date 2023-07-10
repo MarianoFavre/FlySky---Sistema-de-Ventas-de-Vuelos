@@ -12,7 +12,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("api/v1/vuelos")
-public class VueloController{
+public class VueloController {
     private final IVueloService vueloService;
 
     public VueloController(VueloServiceImpl vueloService) {
@@ -31,20 +31,23 @@ public class VueloController{
     }
 
     @GetMapping("/reservas")
-    public ResponseEntity<?> obtenerReservasPorNombreUsuario(@RequestParam  String nombreUsuarioTipoAgente,
-                                                             @RequestParam  String nombreUsuarioTipoCliente) {
+    public ResponseEntity<?> obtenerReservasPorNombreUsuario(@RequestParam String nombreUsuarioTipoAgente,
+                                                             @RequestParam String nombreUsuarioTipoCliente) {
 
         return new ResponseEntity<>(vueloService.obtenerReservasPorNombreUsuario(nombreUsuarioTipoAgente,
                 nombreUsuarioTipoCliente), HttpStatus.OK);
     }
 
     @GetMapping("/ventas")
-    public ResponseEntity<?> obtenerNumeroVentasIngresosDiarios(@RequestParam  String nombreUsuarioTipoAdministrador,
-                                                                @RequestParam  LocalDate fecha) {
+    public ResponseEntity<?> obtenerNumeroVentasIngresosDiarios(@RequestParam String nombreUsuarioTipoAdministrador,
+                                                                @RequestParam LocalDate fecha) {
 
         return new ResponseEntity<>(vueloService
                 .obtenerNumeroVentasIngresosDiarios(nombreUsuarioTipoAdministrador, fecha), HttpStatus.OK);
     }
 
-
+    @DeleteMapping("/borraVuelos/{id}")
+    public void borrarVuelos(@PathVariable Long id){
+        vueloService.borrarVuelos(id);
+    }
 }
