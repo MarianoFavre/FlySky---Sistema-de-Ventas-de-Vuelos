@@ -26,11 +26,11 @@ public class ReservaEntity {
     private LocalDate fechaReserva;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "usuario_id", nullable = false)
+    @JoinColumn(name = "usuario_id", referencedColumnName="id", nullable = false)
     private UsuarioEntity usuario;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "vuelo_id", nullable = false)
+    @JoinColumn(name = "vuelo_id", referencedColumnName="id", nullable = false)
     private VueloEntity vuelo;
 
     private String posicionButaca;

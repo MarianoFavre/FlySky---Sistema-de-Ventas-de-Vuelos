@@ -16,11 +16,11 @@ public class ButacaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Boolean disponible = true;
+    private Boolean disponible;
     //A3, B34 etc posicion del asiento
     private String posicion;
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "vuelo_id", nullable = false)
+    @JoinColumn(name = "vuelo_id", referencedColumnName="id", nullable = false)
     private VueloEntity vuelo;
 
 }

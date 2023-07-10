@@ -121,10 +121,10 @@ public class VueloServiceImplTestSinMock {
 
     @Test
     @DisplayName("US1- Camino no hay vuelos disponibles.")
-    @Disabled
     void obtenerVuelosDisponiblesThrowEntityNotFoundExceptionTest() {
 
-        vueloRepository.deleteAll();//No borra registros relacionados por lo tanto no pasa el test.
+        vueloRepository.deleteAll();// Si tenemos la propiedad fetch = FetchType.EAGER en el atributo butacas y reservas
+        // en VueloEntity, no borra registros relacionados, por lo tanto, no pasa el test.
         //Se puede utilizar porque estamos trabajando con una base de datos en memoria (H2)
         // para el entorno de test. Si ejecutamos todos los test simultaneamente debemos utilizar la anotación
         // @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD).
