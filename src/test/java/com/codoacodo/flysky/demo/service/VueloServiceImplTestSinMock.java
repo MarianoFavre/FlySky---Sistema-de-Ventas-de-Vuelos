@@ -123,7 +123,7 @@ public class VueloServiceImplTestSinMock {
 
     @Test
     @DisplayName("US1- Camino no hay vuelos disponibles.")
-    @Disabled
+    //@Disabled
     void obtenerVuelosDisponiblesThrowEntityNotFoundExceptionTest() {
 
         vueloRepository.deleteAll();//Se puede utilizar porque estamos trabajando con una base de datos en memoria (H2)
@@ -171,9 +171,9 @@ public class VueloServiceImplTestSinMock {
         assertEquals(expected, actual);
         //Modificamos Persist por @ManyToOne(cascade = CascadeType.MERGE) tanto en el atributo usuario y vuelo de
         // ReservaEntity. https://www.baeldung.com/hibernate-detached-entity-passed-to-persist
-        //Podemos ver que la entidad ReservaEntity tiene una relación de muchos a uno con una vuelo y un usuario. El tipo
+        //Podemos ver que la entidad ReservaEntity tiene una relación de muchos a uno con vuelo y usuario. El tipo
         // de cascada se establece en CascadeType.MERGE; por lo tanto, solo propagaremos las operaciones de combinación
-        // al vuelo y usuario asociada. En otras palabras, si fusionamos una entidad ReservaEntity, Hibernate propagará
+        // al vuelo y usuario asociado. En otras palabras, si fusionamos una entidad ReservaEntity, Hibernate propagará
         // la operación al vuelo y usuario asociado, y ambas entidades se actualizarán en la base de datos. Por el
         // contrario, si el tipo de cascada se establece en PERSIST o ALL, Hibernar intentará propagar la operación
         // persist en el campo asociado separado. En consecuencia, cuando persistimos una entidad vuelo y/o usuario
@@ -183,13 +183,18 @@ public class VueloServiceImplTestSinMock {
 
     @Test
     @DisplayName("US2 y US3 - Camino usuario no registrado.")
-    void reservarVueloThrowNoSuchElementExceptionTest() {
+    void reservarVueloThrowNoSuchElementUsuarioExceptionTest() {
         //ARRANGE
         String nombreUsuarioTipoCliente = "Fake";
 
+        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, "Aerolineas Argentinas"
+                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
+                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
+                , "Buenos Aires" , "Uruguay", "AE05", TipoPago.PAGO_EN_LINEA);
+
         //ACT and ASSERT
         assertThrows(NoSuchElementException.class, () -> {
-            vueloService.obtenerVuelosDisponibles(nombreUsuarioTipoCliente);
+            vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto);
         });
     }
 
@@ -200,33 +205,101 @@ public class VueloServiceImplTestSinMock {
         String nombreUsuarioTipoCliente = "Carlos"; //AGENTE_DE_VENTAS
         String nombreUsuarioTipoCliente1 = "Juan"; //ADMINISTRADOR
 
+        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, "Aerolineas Argentinas"
+                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
+                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
+                , "Buenos Aires" , "Uruguay", "AE05", TipoPago.PAGO_EN_LINEA);
+
         //ACT and ASSERT
         assertThrows(UnAuthorizedException.class, () -> {
-            vueloService.obtenerVuelosDisponibles(nombreUsuarioTipoCliente);
+            vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto);
         });
 
         assertThrows(UnAuthorizedException.class, () -> {
-            vueloService.obtenerVuelosDisponibles(nombreUsuarioTipoCliente1);
+            vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto);
         });
     }
 
     @Test
     @DisplayName("US2 y US3 - Camino no hay vuelos disponibles.")
-    @Disabled
+    //@Disabled
     void reservarVueloThrowEntityNotFoundExceptionTest() {
 
         vueloRepository.deleteAll();//Se puede utilizar porque estamos trabajando con una base de datos en memoria (H2)
         // para el entorno de test. Si ejecutamos todos los test simultaneamente debemos utilizar la anotación
         // @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD).
-        // Si tenemos la propiedad fetch = FetchType.EAGER en el atributo butacas y/o reservas en VueloEntity, no se
-        // borran los registros relacionados, por lo tanto, no pasa el test.
+        // Si tenemos la propiedad fetch = FetchType.EAGER en el atributo butacas y/o reservas en VueloEntity y en el
+        // atributo reserva en UsuarioEntity no se borran los registros relacionados, por lo tanto, no pasa el test.
 
         //ARRANGE
         String nombreUsuarioTipoCliente = "Miguel"; //CLIENTE
 
+        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, "Aerolineas Argentinas"
+                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
+                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
+                , "Buenos Aires" , "Uruguay", "AE05", TipoPago.PAGO_EN_LINEA);
+
         //ACT and ASSERT
         assertThrows(EntityNotFoundException.class, () -> {
-            vueloService.obtenerVuelosDisponibles(nombreUsuarioTipoCliente);
+            vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto);
+        });
+    }
+
+    @Test
+    @DisplayName("US2 y US3 - Camino el vuelo que quiere reservar no tiene asignadas butacas.")
+    void reservarVueloThrowEntityNotFoundExceptionTest1() {
+
+        //ARRANGE
+        String nombreUsuarioTipoCliente = "Miguel"; //CLIENTE
+
+        //Intentamos reservar un vuelo disponible sin butacas asignadas.
+        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(125, "Aerolineas Uruguayas"
+                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
+                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
+                , "Buenos Aires" , "Uruguay", "AE05", TipoPago.PAGO_EN_LINEA);
+
+        //ACT and ASSERT
+        assertThrows(EntityNotFoundException.class, () -> {
+            vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto);
+        });
+    }
+
+    @Test
+    @DisplayName("US2 y US3 - Camino la posición de la butaca seleccionada no pertenece al vuelo.")
+    void reservarVueloThrowNoSuchElementExceptionButacaTest() {
+
+        //ARRANGE
+        String nombreUsuarioTipoCliente = "Miguel"; //CLIENTE
+
+        //Intentamos reservar una butaca que no pertenece al vuelo disponible.
+        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, "Aerolineas Argentinas"
+                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
+                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
+                , "Buenos Aires" , "Uruguay", "AE08", TipoPago.PAGO_EN_LINEA);
+
+        //ACT and ASSERT
+        assertThrows(NoSuchElementException.class, () -> {
+            vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto);
+        });
+    }
+
+    @Test
+    @DisplayName("US2 y US3 - Camino la posición de la butaca seleccionada no está disponible.")
+    //@Disabled
+    void reservarVueloThrowEntityNotFoundExceptionTest3() {
+
+        //ARRANGE
+        String nombreUsuarioTipoCliente = "Miguel"; //CLIENTE
+
+        //Intentamos reservar una butaca que ya está reservada.
+        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, "Aerolineas Argentinas"
+                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
+                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
+                , "Buenos Aires" , "Uruguay", "AE04", TipoPago.PAGO_EN_LINEA);
+
+        //ACT and ASSERT
+        assertThrows(EntityNotFoundException.class, () -> {
+            vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto);
         });
     }
 
@@ -396,15 +469,13 @@ public class VueloServiceImplTestSinMock {
 
     @Test
     @DisplayName("US5- Camino: no hay reservas realizadas para tal fecha.")
-    @Disabled
+    //@Disabled
     void obtenerNumeroVentasIngresosDiariosThrowEntityNotFoundExceptionTest() {
-
-        reservaRepository.deleteAll();  // Si tenemos la propiedad fetch = FetchType.EAGER en el atributo butacas en
-        // VueloEntity, no se borran los registros relacionados, por lo tanto, no pasa el test.
 
         //ARRANGE
         String nombreUsuarioTipoAdministrador = "Juan"; //ADMINISTRADOR
-        LocalDate fecha = LocalDate.of(2023, 04, 25);
+        //Buscamos por una fecha que no tiene reservas realizadas.
+        LocalDate fecha = LocalDate.of(2023, 04, 26);
 
         //ACT and ASSERT
         assertThrows(EntityNotFoundException.class, () -> {

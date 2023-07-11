@@ -241,12 +241,6 @@ public class VueloServiceImpl implements IVueloService {
 
         return ventaDto;
     }
-
-    @Override
-    public void borrarVuelos(Long id) {
-        vueloRepository.deleteById(id);
-    }
-
     private ReservaEntity crearReservaEntityPersistencia(ReservaVueloDto reservaVueloDto,
                                                          VueloEntity vueloReserva,
                                                          UsuarioEntity usuario, ButacaEntity butacaEntity) {

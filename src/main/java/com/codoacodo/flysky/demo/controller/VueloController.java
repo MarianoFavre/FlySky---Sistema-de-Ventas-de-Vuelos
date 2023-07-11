@@ -46,8 +46,4 @@ public class VueloController {
                 .obtenerNumeroVentasIngresosDiarios(nombreUsuarioTipoAdministrador, fecha), HttpStatus.OK);
     }
 
-    @DeleteMapping("/borraVuelos/{id}")
-    public void borrarVuelos(@PathVariable Long id){
-        vueloService.borrarVuelos(id);
-    }
 }
