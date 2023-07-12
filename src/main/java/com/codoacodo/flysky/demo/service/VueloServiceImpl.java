@@ -50,8 +50,8 @@ public class VueloServiceImpl implements IVueloService {
         }
 
         if (!usuario.get().getTipoUsuario().equals(TipoUsuario.CLIENTE)) {
-            throw new UnAuthorizedException("Usuario registrado como " + usuario.get().getTipoUsuario() + ". Registrese como CLIENTE para poder " +
-                    "visualizar vuelos disponibles.");
+            throw new UnAuthorizedException("Usuario registrado como " + usuario.get().getTipoUsuario() + ". Registrese " +
+                    "como CLIENTE para poder visualizar vuelos disponibles.");
         }
 
         List<VueloEntity> vuelosEntity = vueloRepository.findByDisponibleTrue();

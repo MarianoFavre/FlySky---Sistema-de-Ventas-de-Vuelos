@@ -123,7 +123,7 @@ public class VueloServiceImplTestSinMock {
 
     @Test
     @DisplayName("US1- Camino no hay vuelos disponibles.")
-    //@Disabled
+    @Disabled
     void obtenerVuelosDisponiblesThrowEntityNotFoundExceptionTest() {
 
         vueloRepository.deleteAll();//Se puede utilizar porque estamos trabajando con una base de datos en memoria (H2)
@@ -222,7 +222,7 @@ public class VueloServiceImplTestSinMock {
 
     @Test
     @DisplayName("US2 y US3 - Camino no hay vuelos disponibles.")
-    //@Disabled
+    @Disabled
     void reservarVueloThrowEntityNotFoundExceptionTest() {
 
         vueloRepository.deleteAll();//Se puede utilizar porque estamos trabajando con una base de datos en memoria (H2)
@@ -285,7 +285,6 @@ public class VueloServiceImplTestSinMock {
 
     @Test
     @DisplayName("US2 y US3 - Camino la posición de la butaca seleccionada no está disponible.")
-    //@Disabled
     void reservarVueloThrowEntityNotFoundExceptionTest3() {
 
         //ARRANGE
@@ -469,7 +468,6 @@ public class VueloServiceImplTestSinMock {
 
     @Test
     @DisplayName("US5- Camino: no hay reservas realizadas para tal fecha.")
-    //@Disabled
     void obtenerNumeroVentasIngresosDiariosThrowEntityNotFoundExceptionTest() {
 
         //ARRANGE

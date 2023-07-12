@@ -15,7 +15,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class VueloEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 
 @RestController
-@RequestMapping("api/v1/vuelos")
+@RequestMapping("/api/v1/vuelos")
 public class VueloController {
     private final IVueloService vueloService;
 
@@ -19,7 +19,7 @@ public class VueloController {
         this.vueloService = vueloService;
     }
 
-    @GetMapping("disponibles")
+    @GetMapping("/disponibles")
     public ResponseEntity<?> verListaDeVuelosDisponibles(@RequestParam String nombreUsuarioTipoCliente) {
         return new ResponseEntity<>(vueloService.obtenerVuelosDisponibles(nombreUsuarioTipoCliente), HttpStatus.OK);
     }
