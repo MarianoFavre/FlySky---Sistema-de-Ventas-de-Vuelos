@@ -251,7 +251,7 @@ public class VueloServiceImpl implements IVueloService {
         reservaEntityPersistencia.setFechaReserva(LocalDate.now());
         reservaEntityPersistencia.setUsuario(usuario);
         reservaEntityPersistencia.setVuelo(vueloReserva);
-        reservaEntityPersistencia.setPosicionButaca(butacaEntity.getPosicion());
+        reservaEntityPersistencia.setButaca(butacaEntity);
 
         return reservaEntityPersistencia;
     }

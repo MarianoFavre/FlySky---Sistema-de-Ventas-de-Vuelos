@@ -33,6 +33,9 @@ public class ReservaEntity {
     @JoinColumn(name = "vuelo_id", referencedColumnName="id", nullable = false)
     private VueloEntity vuelo;
 
-    private String posicionButaca;
+    //private String posicionButaca;
+    @OneToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "butaca_id", nullable = false)
+    private ButacaEntity butaca;
 
 }
