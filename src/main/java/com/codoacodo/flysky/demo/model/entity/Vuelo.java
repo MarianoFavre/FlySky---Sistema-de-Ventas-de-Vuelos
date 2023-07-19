@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,15 +14,13 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VueloEntity {
+public class Vuelo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer numeroVuelo;
-
-    private Boolean disponible;
-    private Integer capacidad;
+    private Long numeroVuelo;
+    private Long capacidad;
     private String aerolinea;
     private LocalDateTime fechaHoraPartida;
     private LocalDateTime fechaHoraLlegada;
@@ -32,10 +29,10 @@ public class VueloEntity {
     private String destino;
 
     @OneToMany(mappedBy = "vuelo", cascade = CascadeType.ALL)
-    private List<ReservaEntity> reservas;
+    private List<Reserva> reservas;
 
     @OneToMany(mappedBy = "vuelo", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<ButacaEntity> butacas;
+    private List<Butaca> butacas;
 
     //Eager: realiza un Join entre la tabla Vuelo y Butaca, para poder cargar ambos objetos en el momento de obtener
     // el Vuelo desde la Base de datos.

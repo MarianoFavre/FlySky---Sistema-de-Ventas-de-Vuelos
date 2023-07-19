@@ -12,24 +12,29 @@ import java.util.NoSuchElementException;
 public class ExceptionController {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<?> entidadNoEncontrada(EntityNotFoundException e){
+    public ResponseEntity<?> entidadNoEncontrada(EntityNotFoundException e) {
         ExceptionDto exceptionDto = new ExceptionDto(404, e.getMessage());
         return new ResponseEntity<>(exceptionDto, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UnAuthorizedException.class)
-    public ResponseEntity<?> usuarioNoAutorizado(UnAuthorizedException e){
+    public ResponseEntity<?> usuarioNoAutorizado(UnAuthorizedException e) {
         ExceptionDto exceptionDto = new ExceptionDto(401, e.getMessage());
         return new ResponseEntity<>(exceptionDto, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<?> elementoNoExiste(NoSuchElementException e){
+    public ResponseEntity<?> elementoNoExiste(NoSuchElementException e) {
         ExceptionDto exceptionDto = new ExceptionDto(500, e.getMessage());
-                //.replace("No value present", "Usuario no registrado."));
+        //.replace("No value present", "Usuario no registrado."));
         return new ResponseEntity<>(exceptionDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> argumentoIlegal(IllegalArgumentException e) {
+        ExceptionDto exceptionDto = new ExceptionDto(400, e.getMessage());
+        return new ResponseEntity<>(exceptionDto, HttpStatus.BAD_REQUEST);
+    }
 
 
 }

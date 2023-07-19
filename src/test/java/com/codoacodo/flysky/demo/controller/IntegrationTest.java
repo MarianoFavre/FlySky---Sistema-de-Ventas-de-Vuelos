@@ -4,7 +4,6 @@ import com.codoacodo.flysky.demo.dto.request.ReservaVueloDto;
 import com.codoacodo.flysky.demo.dto.response.*;
 import com.codoacodo.flysky.demo.model.enums.TipoPago;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -126,7 +125,7 @@ public class IntegrationTest {
         String expectedJson = objectMapper.writeValueAsString(expected);
 
 
-        MvcResult mvcResult = mockMvc.perform(put("/api/v1/vuelos/nuevaReserva")
+        MvcResult mvcResult = mockMvc.perform(post("/api/v1/vuelos/nuevaReserva")
                         .param("nombreUsuarioTipoCliente", "Mariano")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(reservaVueloJson))

@@ -1,11 +1,11 @@
 package com.codoacodo.flysky.demo.dto.response;
 
 
-import com.codoacodo.flysky.demo.model.entity.VueloEntity;
 import com.codoacodo.flysky.demo.model.enums.TipoPago;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,9 +20,9 @@ public class ReservaDto {
 
     private LocalDate fechaReserva;
 
-    private UsuarioDto usuario;
+    //private UsuarioDto usuario;
 
     private VueloReservaDto vuelo;
 
-    private String posicionButaca;
+    private List<ButacaReservaDto> butacas;
 }

@@ -2,9 +2,9 @@ package com.codoacodo.flysky.demo.service;
 
 import com.codoacodo.flysky.demo.dto.request.ReservaVueloDto;
 import com.codoacodo.flysky.demo.exception.EntityNotFoundException;
-import com.codoacodo.flysky.demo.model.entity.ReservaEntity;
-import com.codoacodo.flysky.demo.model.entity.UsuarioEntity;
-import com.codoacodo.flysky.demo.model.entity.VueloEntity;
+import com.codoacodo.flysky.demo.model.entity.Reserva;
+import com.codoacodo.flysky.demo.model.entity.Usuario;
+import com.codoacodo.flysky.demo.model.entity.Vuelo;
 import com.codoacodo.flysky.demo.model.enums.TipoPago;
 import com.codoacodo.flysky.demo.model.enums.TipoUsuario;
 import com.codoacodo.flysky.demo.repository.IButacaRepository;
@@ -56,14 +56,14 @@ public class VueloServiceImplTestConMock {
         //ARRANGE
         String nombreUsuarioTipoCliente = "Mariano"; //CLIENTE
 
-        List<ReservaEntity> reservaEntities = new ArrayList<>();
+        List<Reserva> reservaEntities = new ArrayList<>();
 
-        Optional<UsuarioEntity> usuarioMock = Optional
-                .of(new UsuarioEntity(4L, "Mariano", TipoUsuario.CLIENTE, 666666, reservaEntities));
+        Optional<Usuario> usuarioMock = Optional
+                .of(new Usuario(4L, "Mariano", TipoUsuario.CLIENTE, 666666, reservaEntities));
 
         System.out.println(usuarioMock);
 
-        List<VueloEntity> vuelosMock = new ArrayList<>();
+        List<Vuelo> vuelosMock = new ArrayList<>();
 
         when(usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente)).thenReturn(usuarioMock);
         when(vueloRepository.findByDisponibleTrue()).thenReturn(vuelosMock);
@@ -88,10 +88,10 @@ public class VueloServiceImplTestConMock {
                 , LocalDateTime.of(2023, 06, 25, 23, 53, 30)
                 , "Buenos Aires", "Uruguay", "AE05", TipoPago.PAGO_EN_LINEA);
 
-        UsuarioEntity usuarioClienteMock =
-                new UsuarioEntity(1L, "Miguel", TipoUsuario.CLIENTE, 156453, null);
+        Usuario usuarioClienteMock =
+                new Usuario(1L, "Miguel", TipoUsuario.CLIENTE, 156453, null);
 
-        List<VueloEntity> vuelosMock = new ArrayList<>();
+        List<Vuelo> vuelosMock = new ArrayList<>();
 
         when(usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente)).thenReturn(Optional.of(usuarioClienteMock));
         when(vueloRepository.findByDisponibleTrue()).thenReturn(vuelosMock);

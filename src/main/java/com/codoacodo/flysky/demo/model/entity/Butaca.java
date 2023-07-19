@@ -4,13 +4,15 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "butaca")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ButacaEntity {
+@ToString
+public class Butaca {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,11 +23,17 @@ public class ButacaEntity {
     //A3, B34 etc posicion del asiento
     private String posicion;
 
+    //private String nombrePasajero;
+
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "vuelo_id", referencedColumnName="id", nullable = false)
-    private VueloEntity vuelo;
+    private Vuelo vuelo;
 
-    @OneToOne(mappedBy = "butaca")
-    private ReservaEntity reserva;
+    //@OneToOne(mappedBy = "butaca")
+    //private Reserva reserva;
+
+    @ManyToOne()
+    @JoinColumn(name = "reserva_id", referencedColumnName="id")
+    private Reserva reserva;
 
 }

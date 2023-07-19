@@ -2,15 +2,16 @@ package com.codoacodo.flysky.demo.service;
 
 import com.codoacodo.flysky.demo.Util;
 import com.codoacodo.flysky.demo.dto.request.ReservaVueloDto;
+import com.codoacodo.flysky.demo.dto.response.ButacaReservaDto;
 import com.codoacodo.flysky.demo.dto.response.ReservaDto;
 import com.codoacodo.flysky.demo.dto.response.VentaDto;
 import com.codoacodo.flysky.demo.dto.response.VueloDto;
 import com.codoacodo.flysky.demo.exception.EntityNotFoundException;
 import com.codoacodo.flysky.demo.exception.UnAuthorizedException;
-import com.codoacodo.flysky.demo.model.entity.ButacaEntity;
-import com.codoacodo.flysky.demo.model.entity.ReservaEntity;
-import com.codoacodo.flysky.demo.model.entity.UsuarioEntity;
-import com.codoacodo.flysky.demo.model.entity.VueloEntity;
+import com.codoacodo.flysky.demo.model.entity.Butaca;
+import com.codoacodo.flysky.demo.model.entity.Reserva;
+import com.codoacodo.flysky.demo.model.entity.Usuario;
+import com.codoacodo.flysky.demo.model.entity.Vuelo;
 import com.codoacodo.flysky.demo.model.enums.TipoUsuario;
 import com.codoacodo.flysky.demo.repository.IButacaRepository;
 import com.codoacodo.flysky.demo.repository.IReservaRepository;
@@ -20,15 +21,16 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class VueloServiceImpl implements IVueloService {
     private final IVueloRepository vueloRepository;
     private final IUsuarioRepository usuarioRepository;
     private final IButacaRepository butacaRepository;
-
     private final IReservaRepository reservaRepository;
 
     public VueloServiceImpl(IVueloRepository vueloRepository, IUsuarioRepository usuarioRepository,
@@ -39,10 +41,12 @@ public class VueloServiceImpl implements IVueloService {
         this.reservaRepository = reservaRepository;
     }
 
+    ModelMapper mapper = new ModelMapper();
+
     @Override
     public List<VueloDto> obtenerVuelosDisponibles(String nombreUsuarioTipoCliente) {
 
-        Optional<UsuarioEntity> usuario = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente);
+        Optional<Usuario> usuario = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente);
 
         if (usuario.isEmpty()) {
             throw new NoSuchElementException("Usuario no registrado. Registrese como CLIENTE para poder visualizar " +
@@ -54,23 +58,45 @@ public class VueloServiceImpl implements IVueloService {
                     "como CLIENTE para poder visualizar vuelos disponibles.");
         }
 
-        List<VueloEntity> vuelosEntity = vueloRepository.findByDisponibleTrue();
+        List<Vuelo> vuelos = vueloRepository.findAll();
 
-        //si la disponibilidad de todos los registro de la tabla vuelo es false, la base de datos va a retornar
-        // una lista de vuelos vacía sin lanzar una excepción.
-        if (vuelosEntity.isEmpty()) {
+        //si tabla vuelo no tiene cargada información , la base de datos va a retornar lista de vuelos vacía sin lanzar una excepción.
+        if (vuelos.isEmpty()) {
+            throw new EntityNotFoundException("La lista de vuelos está vacía.");
+        }
+
+        List<Vuelo> vuelosDisponibles = new ArrayList<>();
+
+        LocalDateTime fechaHoraActual = LocalDateTime.now();
+
+        for (Vuelo vuelo : vuelos) {
+            LocalDateTime fechaHoraVuelo = vuelo.getFechaHoraPartida();
+
+            if (fechaHoraVuelo.isAfter(fechaHoraActual) && disponibilidadButaca(vuelo)) {
+                vuelosDisponibles.add(vuelo);
+            }
+        }
+
+        if (vuelosDisponibles.isEmpty()) {
             throw new EntityNotFoundException("No hay vuelos disponibles en este momento. Intente más tarde.");
         }
 
-        ModelMapper mapper = new ModelMapper();
-
         List<VueloDto> vuelosDto = new ArrayList<>();
-        vuelosEntity.forEach(vueloEntity -> vuelosDto.add(mapper.map(vueloEntity, VueloDto.class)));
+        vuelosDisponibles.forEach(vueloDisponible -> vuelosDto.add(mapper.map(vueloDisponible, VueloDto.class)));
 
         //Otra alternativa
-        //List<VueloDto> vuelosDto = vuelosEntity.stream().map(vueloEntity-> mapper.map(vueloEntity, VueloDto.class)).toList();
+        //List<VueloDto> vuelosDto = vuelosDisponibles.stream().map(vueloDisponible-> mapper.map(vueloDisponible, VueloDto.class)).toList();
 
         return vuelosDto;
+    }
+
+    private boolean disponibilidadButaca(Vuelo vuelo) {
+        for (Butaca butaca : vuelo.getButacas()) {
+            if (butaca.getDisponible()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -79,69 +105,50 @@ public class VueloServiceImpl implements IVueloService {
             reservaVueloDto) {
 
         //Otra alternativa para tratar un Optional y lanzar una excepción.
-        UsuarioEntity usuarioCliente = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente)
+        Usuario usuarioCliente = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente)
                 .orElseThrow(() -> new NoSuchElementException("Usuario no registrado. Registrese como CLIENTE para " +
                         "poder realizar reservas."));
 
-        //if (usuario.getTipoUsuario().getDescripcion().equalsIgnoreCase("Cliente"))
         if (usuarioCliente.getTipoUsuario().equals(TipoUsuario.CLIENTE)) {
 
-            List<VueloEntity> vuelosDisponibles = vueloRepository.findByDisponibleTrue();
-            //si la disponibilidad de todos los registro de la tabla vuelo es false, la base de datos va a retornar
-            // una lista de vuelos vacía sin lanzar una excepción.
-            if (vuelosDisponibles.isEmpty()) {
-                throw new EntityNotFoundException("No hay vuelos disponibles en este momento. Intente más tarde.");
+            Vuelo vueloReserva = vueloRepository.findByNumeroVuelo(reservaVueloDto.getNumeroVuelo())
+                    .orElseThrow(() -> new NoSuchElementException("El vuelo que quiere reservar no existe."));
+
+            if (vueloReserva.getFechaHoraPartida().isBefore(LocalDateTime.now())) {
+                throw new IllegalArgumentException("El vuelo que intenta reservar ya caducó.");
             }
 
-            VueloEntity vueloReserva = vuelosDisponibles.stream().filter(vueloDisponible ->
-                            vueloDisponible.getNumeroVuelo().equals(reservaVueloDto.getNumeroVuelo()) &
-                                    vueloDisponible.getAerolinea().equalsIgnoreCase(reservaVueloDto.getAerolinea()) &
-                                    vueloDisponible.getFechaHoraPartida().equals(reservaVueloDto.getFechaHoraPartida()) &
-                                    vueloDisponible.getFechaHoraLlegada().equals(reservaVueloDto.getFechaHoraLlegada()) &
-                                    vueloDisponible.getOrigen().equalsIgnoreCase(reservaVueloDto.getOrigen()) &
-                                    vueloDisponible.getDestino().equalsIgnoreCase(reservaVueloDto.getDestino()))
-                    .findFirst()
-                    .orElseThrow(() -> new NoSuchElementException("El vuelo que quiere reservar no está disponible."));
-            //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR DE LO QUE HAY
-            // DISPONIBLE Y NO PARA RELLENAR.
-
-            List<ButacaEntity> butacasDelVuelo = vueloReserva.getButacas();
+            List<Butaca> butacasDelVuelo = vueloReserva.getButacas();
 
             if (butacasDelVuelo.isEmpty()) {
                 throw new EntityNotFoundException("El vuelo que quiere reservar no tiene asignadas butacas.");
             }
 
-            ButacaEntity butacaReserva = butacasDelVuelo.stream()
-                    .filter(butaca -> reservaVueloDto.getPosicionButaca().equals(butaca.getPosicion()))
-                    .findFirst()
-                    .orElseThrow(() -> new NoSuchElementException("La posición de la butaca seleccionada no pertenece " +
-                            "al vuelo."));
-            //PREGUNTAR SI SE DEBE HACER PORQUE EN EL FRONT TENDRIAMOS OPCIONES PARA SELECCIONAR DE LO QUE HAY
-            // DISPONIBLE Y NO PARA RELLENAR
+            List<Butaca> butacasReserva = new ArrayList<>();
 
-            if (!butacaReserva.getDisponible()) {
-                throw new EntityNotFoundException("La posición de la butaca seleccionada no está disponible.");
+            for (ButacaReservaDto butacaReservaDto : reservaVueloDto.getButacas()) {
+                Butaca butacaExistente = butacasDelVuelo.stream()
+                        .filter(butacaDelVuelo -> butacaDelVuelo.getPosicion().equals(butacaReservaDto.getPosicion()))
+                        .findFirst()
+                        .orElseThrow(() -> new NoSuchElementException("La posición " + butacaReservaDto.getPosicion() +
+                                " de la butaca que intenta reservar no pertenece al vuelo."));
+
+                if (!butacaExistente.getDisponible()) {
+                    throw new EntityNotFoundException("La posición " + butacaReservaDto.getPosicion() + " de la butaca" +
+                            " que intenta reservar ya se encuentra ocupada.");
+                }
+
+                butacaExistente.setDisponible(Boolean.FALSE);
+
+                butacasReserva.add(butacaExistente);
             }
+            //solamente me setea en falso la disponibilidad en la entidad Butaca, además de setear la reserva en la entidad Reserva
+            Reserva reservaEntity = reservaRepository
+                    .save(crearReservaEntityPersistencia(reservaVueloDto, vueloReserva, usuarioCliente, butacasReserva));
 
-            //Modificamos por FALSE la disponibilidad de la butaca reservada.
-            butacaReserva.setDisponible(Boolean.FALSE);
-            ButacaEntity butacaEntity = butacaRepository.save(butacaReserva);
-
-            //Modificamos por FALSE la disponibilidad del vuelo si todas las butacas han sido reservadas.
-            long cantidadButacasOcupadas = butacasDelVuelo.stream()
-                    .filter(butaca -> butaca.getDisponible().equals(Boolean.FALSE))
-                    .count();
-
-            if (cantidadButacasOcupadas == vueloReserva.getCapacidad()) {
-
-                vueloReserva.setDisponible(Boolean.FALSE);
-                vueloRepository.save(vueloReserva);
-            }
-
-            ReservaEntity reservaEntity = reservaRepository
-                    .save(crearReservaEntityPersistencia(reservaVueloDto, vueloReserva, usuarioCliente, butacaEntity));
-
-            ModelMapper mapper = new ModelMapper();
+            //modifico el null de reserva_id en la entidad Butaca por el id de la reserva
+            butacasReserva.forEach(butacaReserva -> butacaReserva.setReserva(reservaEntity));
+            butacaRepository.saveAll(butacasReserva);
 
             return mapper.map(reservaEntity, ReservaDto.class);
 
@@ -154,28 +161,27 @@ public class VueloServiceImpl implements IVueloService {
     @Override
     public List<ReservaDto> obtenerReservasPorNombreUsuario(String nombreUsuarioTipoAgente, String
             nombreUsuarioTipoCliente) {
-        ModelMapper mapper = new ModelMapper();
 
         //Si no lo manejamos con un Optional y usuarioAgente no existe, Spring nos lanza un NullPointerException(500 Internal Server Error)
         //Si lo manejamos con un Optional y usuarioAgente no existe, Spring nos lanza un NoSuchElementException(500 Internal Server Error)
-        Optional<UsuarioEntity> usuarioAgente = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoAgente);
+        Optional<Usuario> usuarioAgente = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoAgente);
 
         if (usuarioAgente.isPresent()) {
             //if (usuarioAgente.get().getTipoUsuario().getDescripcion().equalsIgnoreCase("Agente de ventas"))
             if (usuarioAgente.get().getTipoUsuario().equals(TipoUsuario.AGENTE_DE_VENTAS)) {
 
-                Optional<UsuarioEntity> usuarioCliente = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente);
+                Optional<Usuario> usuarioCliente = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente);
 
                 if (usuarioCliente.isPresent()) {
                     if (usuarioCliente.get().getTipoUsuario().equals(TipoUsuario.CLIENTE)) {
 
-                        List<ReservaEntity> reservasEntity = usuarioCliente.get().getReserva();
+                        List<Reserva> reservasEntity = usuarioCliente.get().getReserva();
 
                         //Otra alternativa pero menos eficiente, ya que estoy llamando a dos repositorios para el mismo
                         // fin, es decir, pido dos veces las reservas.
                         //List<ReservaEntity> reservasEntity = reservaRepository.findByUsuario(usuarioCliente.get());
 
-                        if(reservasEntity.isEmpty()){
+                        if (reservasEntity.isEmpty()) {
                             throw new EntityNotFoundException("No hay reservas realizadas por el usuario "
                                     + nombreUsuarioTipoCliente + ".");
                         }
@@ -201,7 +207,7 @@ public class VueloServiceImpl implements IVueloService {
     @Override
     public VentaDto obtenerNumeroVentasIngresosDiarios(String nombreUsuarioTipoAdministrador, LocalDate fecha) {
 
-        Optional<UsuarioEntity> usuarioAdministrador = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoAdministrador);
+        Optional<Usuario> usuarioAdministrador = usuarioRepository.findByNombreUsuario(nombreUsuarioTipoAdministrador);
 
         if (usuarioAdministrador.isEmpty()) {
             throw new NoSuchElementException("Usuario no registrado. Registrese como ADMINISTRADOR para poder visualizar " +
@@ -214,7 +220,7 @@ public class VueloServiceImpl implements IVueloService {
                     "diarios");
         }
 
-        List<ReservaEntity> reservasEntity = reservaRepository.findByFechaReserva(fecha);
+        List<Reserva> reservasEntity = reservaRepository.findByFechaReserva(fecha);
 
         if (reservasEntity.isEmpty()) {
 
@@ -225,10 +231,9 @@ public class VueloServiceImpl implements IVueloService {
         }
 
         VentaDto ventaDto = new VentaDto();
-        ventaDto.setFecha(fecha);
         ventaDto.setCantidadVenta(reservasEntity.size());
 
-        List<Double> montosPago = reservasEntity.stream().map(ReservaEntity::getMontoPago).toList();
+        List<Double> montosPago = reservasEntity.stream().map(Reserva::getMontoPago).toList();
 
         ventaDto.setIngreso(montosPago.stream()
                 .reduce(0.0, Double::sum)); //operación de reducción para realizar la suma
@@ -241,17 +246,20 @@ public class VueloServiceImpl implements IVueloService {
 
         return ventaDto;
     }
-    private ReservaEntity crearReservaEntityPersistencia(ReservaVueloDto reservaVueloDto,
-                                                         VueloEntity vueloReserva,
-                                                         UsuarioEntity usuario, ButacaEntity butacaEntity) {
-        ReservaEntity reservaEntityPersistencia = new ReservaEntity();
+
+    private Reserva crearReservaEntityPersistencia(ReservaVueloDto reservaVueloDto,
+                                                   Vuelo vueloReserva,
+                                                   Usuario usuario,
+                                                   List<Butaca> butacasReserva) {
+        Reserva reservaEntityPersistencia = new Reserva();
         reservaEntityPersistencia.setTipoPago(reservaVueloDto.getTipoPago());
         reservaEntityPersistencia.setMontoPago
-                (Util.montoAPagar(reservaVueloDto.getTipoPago(), vueloReserva.getPrecio()));
+                (Util.montoAPagar(reservaVueloDto.getTipoPago(), vueloReserva.getPrecio()) * butacasReserva.size());
         reservaEntityPersistencia.setFechaReserva(LocalDate.now());
         reservaEntityPersistencia.setUsuario(usuario);
         reservaEntityPersistencia.setVuelo(vueloReserva);
-        reservaEntityPersistencia.setButaca(butacaEntity);
+        //seteamos las butacas para poder realizar el mapper de reservaEntity y nos retorne las butacas reservadas
+        reservaEntityPersistencia.setButacas(butacasReserva);
 
         return reservaEntityPersistencia;
     }

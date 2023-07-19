@@ -4,7 +4,6 @@ import com.codoacodo.flysky.demo.dto.request.ReservaVueloDto;
 import com.codoacodo.flysky.demo.dto.response.*;
 import com.codoacodo.flysky.demo.exception.EntityNotFoundException;
 import com.codoacodo.flysky.demo.exception.UnAuthorizedException;
-import com.codoacodo.flysky.demo.model.entity.VueloEntity;
 import com.codoacodo.flysky.demo.model.enums.TipoPago;
 import com.codoacodo.flysky.demo.repository.IButacaRepository;
 import com.codoacodo.flysky.demo.repository.IReservaRepository;
