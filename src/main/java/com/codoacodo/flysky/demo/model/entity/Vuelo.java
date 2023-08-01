@@ -19,8 +19,8 @@ public class Vuelo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long numeroVuelo;
-    private Long capacidad;
+    private Integer numeroVuelo;
+    private Integer capacidad;
     private String aerolinea;
     private LocalDateTime fechaHoraPartida;
     private LocalDateTime fechaHoraLlegada;

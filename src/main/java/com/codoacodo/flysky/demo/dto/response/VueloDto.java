@@ -12,8 +12,8 @@ import java.util.List;
 @EqualsAndHashCode
 public class VueloDto {
 
-    private Long numeroVuelo;
-    private Long capacidad;
+    private Integer numeroVuelo;
+    private Integer capacidad;
     private String aerolinea;
     private LocalDateTime fechaHoraPartida;
     private LocalDateTime fechaHoraLlegada;

@@ -13,7 +13,8 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/api/v1/vuelos")
 public class VueloController {
-    private final IVueloService vueloService;
+
+    IVueloService vueloService;
 
     public VueloController(VueloServiceImpl vueloService) {
         this.vueloService = vueloService;
@@ -48,4 +49,12 @@ public class VueloController {
                 .obtenerNumeroVentasIngresosDiarios(nombreUsuarioTipoAdministrador, fecha), HttpStatus.OK);
     }
 
+    //-----------------------------------------------------------------------------------------------------------------
+/*
+    @DeleteMapping("/borrar/{id}")
+    public String borrarVuelos(@PathVariable Long id) {
+        vueloService.borrarVuelos(id);
+        return "Borrado exitoso";
+    }
+*/
 }

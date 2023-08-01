@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface IVueloRepository extends JpaRepository<Vuelo, Long> {
 
     //https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.query-creation
-    Optional<Vuelo> findByNumeroVuelo(Long numeroVuelo);
+    Optional<Vuelo> findByNumeroVuelo(Integer numeroVuelo);
 
 }
 

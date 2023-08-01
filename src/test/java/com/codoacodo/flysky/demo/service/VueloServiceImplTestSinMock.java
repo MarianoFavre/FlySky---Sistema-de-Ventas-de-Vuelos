@@ -56,27 +56,63 @@ public class VueloServiceImplTestSinMock {
 
         List<VueloDto> expected = new ArrayList<>();
 
-        List<ButacaDto> butacaDtos1 = new ArrayList<>();
-        ButacaDto butacaDto1 = new ButacaDto(FALSE, "AE04");
-        ButacaDto butacaDto2 = new ButacaDto(TRUE, "AE05");
-        ButacaDto butacaDto3 = new ButacaDto(TRUE, "AE06");
-        butacaDtos1.add(butacaDto1);
-        butacaDtos1.add(butacaDto2);
-        butacaDtos1.add(butacaDto3);
+        List<ButacaDto> butacaDtos = new ArrayList<>();
+        ButacaDto butacaDto1 = new ButacaDto(FALSE, "A1");
+        ButacaDto butacaDto2 = new ButacaDto(TRUE, "B1");
+        ButacaDto butacaDto3 = new ButacaDto(TRUE, "C1");
+        ButacaDto butacaDto4 = new ButacaDto(TRUE, "D1");
+        ButacaDto butacaDto5 = new ButacaDto(TRUE, "A2");
+        ButacaDto butacaDto6 = new ButacaDto(TRUE, "B2");
+        ButacaDto butacaDto7 = new ButacaDto(TRUE, "C2");
+        ButacaDto butacaDto8 = new ButacaDto(TRUE, "D2");
+        ButacaDto butacaDto9 = new ButacaDto(TRUE, "A3");
+        ButacaDto butacaDto10 = new ButacaDto(TRUE, "B3");
+        ButacaDto butacaDto11 = new ButacaDto(TRUE, "C3");
+        ButacaDto butacaDto12 = new ButacaDto(TRUE, "D3");
+        ButacaDto butacaDto13 = new ButacaDto(TRUE, "A5");
+        ButacaDto butacaDto14 = new ButacaDto(TRUE, "B5");
+        ButacaDto butacaDto15 = new ButacaDto(TRUE, "C5");
+        ButacaDto butacaDto16 = new ButacaDto(TRUE, "D5");
+        ButacaDto butacaDto17 = new ButacaDto(TRUE, "E5");
+        ButacaDto butacaDto18 = new ButacaDto(TRUE, "F5");
+        ButacaDto butacaDto19 = new ButacaDto(TRUE, "A28");
+        ButacaDto butacaDto20 = new ButacaDto(TRUE, "B28");
+        ButacaDto butacaDto21 = new ButacaDto(TRUE, "C28");
+        ButacaDto butacaDto22 = new ButacaDto(TRUE, "D28");
+        ButacaDto butacaDto23 = new ButacaDto(TRUE, "E28");
+        ButacaDto butacaDto24 = new ButacaDto(TRUE, "F28");
 
-        List<ButacaDto> butacaDtos2 = new ArrayList<>();
+        butacaDtos.add(butacaDto1);
+        butacaDtos.add(butacaDto2);
+        butacaDtos.add(butacaDto3);
+        butacaDtos.add(butacaDto4);
+        butacaDtos.add(butacaDto5);
+        butacaDtos.add(butacaDto6);
+        butacaDtos.add(butacaDto7);
+        butacaDtos.add(butacaDto8);
+        butacaDtos.add(butacaDto9);
+        butacaDtos.add(butacaDto10);
+        butacaDtos.add(butacaDto11);
+        butacaDtos.add(butacaDto12);
+        butacaDtos.add(butacaDto13);
+        butacaDtos.add(butacaDto14);
+        butacaDtos.add(butacaDto15);
+        butacaDtos.add(butacaDto16);
+        butacaDtos.add(butacaDto17);
+        butacaDtos.add(butacaDto18);
+        butacaDtos.add(butacaDto19);
+        butacaDtos.add(butacaDto20);
+        butacaDtos.add(butacaDto21);
+        butacaDtos.add(butacaDto22);
+        butacaDtos.add(butacaDto23);
+        butacaDtos.add(butacaDto24);
 
-        VueloDto vueloDto1 = new VueloDto(666, TRUE, 3, "Aerolineas Argentinas",
-                LocalDateTime.of(2023, 06, 25, 23, 53, 30),
-                LocalDateTime.of(2023, 06, 25, 23, 53, 30), 15000D,
-                "Buenos Aires", "Uruguay", butacaDtos1);
-        VueloDto vueloDto2 = new VueloDto(125, TRUE, 50, "Aerolineas Uruguayas",
-                LocalDateTime.of(2023, 06, 25, 23, 53, 30),
-                LocalDateTime.of(2023, 06, 25, 23, 53, 30), 15000D,
-                "Buenos Aires", "Uruguay", butacaDtos2);
+        VueloDto vueloDto1 = new VueloDto(666, 156, "Aerolineas Argentinas",
+                LocalDateTime.of(2050, 07, 25, 8, 00, 00),
+                LocalDateTime.of(2050, 07, 25, 8, 45, 00), 15000D,
+                "Buenos Aires", "Uruguay", butacaDtos);
 
         expected.add(vueloDto1);
-        expected.add(vueloDto2);
 
         //ACT
         List<VueloDto> actual = vueloService.obtenerVuelosDisponibles(nombreUsuarioTipoCliente);
@@ -121,15 +157,41 @@ public class VueloServiceImplTestSinMock {
     }
 
     @Test
+    @DisplayName("US1- Camino la lista de vuelos está vacía.")
+    @Disabled
+    void obtenerVuelosDisponiblesThrowFirstEntityNotFoundExceptionTest() {
+        //Orden de borrado siempre y cuando no se utilice fetch = FetchType.EAGER
+        //butacaRepository.deleteAll(); //No utilizar fetch = FetchType.EAGER en la entidades relacionadas a Butaca (Reserva y Vuelo)
+        //usuarioRepository.deleteAll();//Agregar CascadeType.REMOVE en el atributo butacas en la entidad Reserva para borrar las reservas del usuario.
+        //reservaRepository.deleteAll(); //Si pretendemos borrar todas las reservas
+        //vueloRepository.deleteAll();
+        //Se puede utilizar porque estamos trabajando con una base de datos en memoria (H2) para el entorno de test.
+        // Si ejecutamos todos los test simultaneamente debemos utilizar la anotación
+        // @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD).
+        //Al borrar el repositorio Usuario siempre nos va a lanzar  NoSuchElementException por lo que el test no va a pasar.
+        //DEBEMOS UTILIZAR TEST CON MOCK PARA TESTEAR ESTE METODO.
+
+        //ARRANGE
+        String nombreUsuarioTipoCliente = "Miguel"; //CLIENTE
+
+        //ACT and ASSERT
+        assertThrows(EntityNotFoundException.class, () -> {
+            vueloService.obtenerVuelosDisponibles(nombreUsuarioTipoCliente);
+        });
+    }
+
+    @Test
     @DisplayName("US1- Camino no hay vuelos disponibles.")
     @Disabled
-    void obtenerVuelosDisponiblesThrowEntityNotFoundExceptionTest() {
-
-        vueloRepository.deleteAll();//Se puede utilizar porque estamos trabajando con una base de datos en memoria (H2)
-        // para el entorno de test. Si ejecutamos todos los test simultaneamente debemos utilizar la anotación
+    void obtenerVuelosDisponiblesThrowSecondEntityNotFoundExceptionTest() {
+        butacaRepository.deleteAll();
+        //Se puede utilizar porque estamos trabajando con una base de datos en memoria (H2) para el entorno de test.
+        // Si ejecutamos todos los test simultaneamente debemos utilizar la anotación
         // @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD).
-        // Si tenemos la propiedad fetch = FetchType.EAGER en el atributo butacas y/o reservas en VueloEntity, no se
-        // borran los registros relacionados, por lo tanto, no pasa el test.
+        // Si tenemos la propiedad fetch = FetchType.EAGER en el atributo butacas en Vuelo y en Reservas , no se
+        // borran los registros, por lo tanto, no pasa el test. Pero si le sacamos dicha propiedad o utilizamos
+        // fetch = FetchType.LAZY nos lanza la excepción LazyInitializationException.
+        //DEBEMOS UTILIZAR TEST CON MOCK PARA TESTEAR ESTE METODO.
 
         //ARRANGE
         String nombreUsuarioTipoCliente = "Miguel"; //CLIENTE
@@ -149,27 +211,35 @@ public class VueloServiceImplTestSinMock {
         //ARRANGE
         String nombreUsuarioTipoCliente = "Mariano"; //CLIENTE
 
-        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, "Aerolineas Argentinas"
-                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
-                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
-                , "Buenos Aires" , "Uruguay", "AE05", TipoPago.PAGO_EN_LINEA);
+        List<ButacaReservaDto> butacas = new ArrayList<>();
 
-        UsuarioDto usuario = new UsuarioDto("Mariano", 666666);
+        ButacaReservaDto butacaReservaDto = new ButacaReservaDto("B1", "Mariano");
+        ButacaReservaDto butacaReservaDto1 = new ButacaReservaDto("C1", "Paola");
+
+        butacas.add(butacaReservaDto);
+        butacas.add(butacaReservaDto1);
+
+        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, butacas, TipoPago.PAGO_EN_LINEA);
 
         VueloReservaDto vuelo = new VueloReservaDto(666, "Aerolineas Argentinas",
-                LocalDateTime.of(2023, 06, 25, 23, 53, 30),
-                LocalDateTime.of(2023, 06, 25, 23, 53, 30),
+                LocalDateTime.of(2050, 07, 25, 8, 00, 00),
+                LocalDateTime.of(2050, 07, 25, 8, 45, 00),
                 "Buenos Aires", "Uruguay");
 
-        ReservaDto expected = new ReservaDto(TipoPago.PAGO_EN_LINEA, 13500D, LocalDate.now(), usuario, vuelo
-                , "AE05" );
+        ReservaDto expected = new ReservaDto(TipoPago.PAGO_EN_LINEA, 27000D, LocalDateTime.now(), vuelo
+                , butacas);
         //ACT
         ReservaDto actual = vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto);
 
         //ASSERT
-        assertEquals(expected, actual);
+        //assertEquals(expected, actual); //No pasa el test porque hay un defasaje entre la fecha real de reserva y la esperada
+        assertEquals(expected.getTipoPago(), actual.getTipoPago());
+        assertEquals(expected.getMontoPago(), actual.getMontoPago());
+        assertEquals(expected.getVuelo(), actual.getVuelo());
+        assertEquals(expected.getButacas(), actual.getButacas());
+        //assertEquals(expected.getFechaReserva(), actual.getFechaReserva());
         //Modificamos Persist por @ManyToOne(cascade = CascadeType.MERGE) tanto en el atributo usuario y vuelo de
-        // ReservaEntity. https://www.baeldung.com/hibernate-detached-entity-passed-to-persist
+        // Reserva. https://www.baeldung.com/hibernate-detached-entity-passed-to-persist
         //Podemos ver que la entidad ReservaEntity tiene una relación de muchos a uno con vuelo y usuario. El tipo
         // de cascada se establece en CascadeType.MERGE; por lo tanto, solo propagaremos las operaciones de combinación
         // al vuelo y usuario asociado. En otras palabras, si fusionamos una entidad ReservaEntity, Hibernate propagará
@@ -186,10 +256,15 @@ public class VueloServiceImplTestSinMock {
         //ARRANGE
         String nombreUsuarioTipoCliente = "Fake";
 
-        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, "Aerolineas Argentinas"
-                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
-                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
-                , "Buenos Aires" , "Uruguay", "AE05", TipoPago.PAGO_EN_LINEA);
+        List<ButacaReservaDto> butacas = new ArrayList<>();
+
+        ButacaReservaDto butacaReservaDto = new ButacaReservaDto("B1", "Mariano");
+        ButacaReservaDto butacaReservaDto1 = new ButacaReservaDto("C1", "Paola");
+
+        butacas.add(butacaReservaDto);
+        butacas.add(butacaReservaDto1);
+
+        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, butacas, TipoPago.PAGO_EN_LINEA);
 
         //ACT and ASSERT
         assertThrows(NoSuchElementException.class, () -> {
@@ -204,10 +279,15 @@ public class VueloServiceImplTestSinMock {
         String nombreUsuarioTipoCliente = "Carlos"; //AGENTE_DE_VENTAS
         String nombreUsuarioTipoCliente1 = "Juan"; //ADMINISTRADOR
 
-        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, "Aerolineas Argentinas"
-                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
-                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
-                , "Buenos Aires" , "Uruguay", "AE05", TipoPago.PAGO_EN_LINEA);
+        List<ButacaReservaDto> butacas = new ArrayList<>();
+
+        ButacaReservaDto butacaReservaDto = new ButacaReservaDto("B1", "Mariano");
+        ButacaReservaDto butacaReservaDto1 = new ButacaReservaDto("C1", "Paola");
+
+        butacas.add(butacaReservaDto);
+        butacas.add(butacaReservaDto1);
+
+        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, butacas, TipoPago.PAGO_EN_LINEA);
 
         //ACT and ASSERT
         assertThrows(UnAuthorizedException.class, () -> {
@@ -215,66 +295,26 @@ public class VueloServiceImplTestSinMock {
         });
 
         assertThrows(UnAuthorizedException.class, () -> {
-            vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto);
+            vueloService.reservarVuelo(nombreUsuarioTipoCliente1, reservaVueloDto);
         });
     }
 
     @Test
-    @DisplayName("US2 y US3 - Camino no hay vuelos disponibles.")
-    @Disabled
-    void reservarVueloThrowEntityNotFoundExceptionTest() {
-
-        vueloRepository.deleteAll();//Se puede utilizar porque estamos trabajando con una base de datos en memoria (H2)
-        // para el entorno de test. Si ejecutamos todos los test simultaneamente debemos utilizar la anotación
-        // @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD).
-        // Si tenemos la propiedad fetch = FetchType.EAGER en el atributo butacas y/o reservas en VueloEntity y en el
-        // atributo reserva en UsuarioEntity no se borran los registros relacionados, por lo tanto, no pasa el test.
+    @DisplayName("US2 y US3 - Camino el vuelo que quiere reservar no existe.")
+    void reservarVueloThrowNoSuchElementExceptionTest() {
 
         //ARRANGE
         String nombreUsuarioTipoCliente = "Miguel"; //CLIENTE
 
-        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, "Aerolineas Argentinas"
-                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
-                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
-                , "Buenos Aires" , "Uruguay", "AE05", TipoPago.PAGO_EN_LINEA);
+        List<ButacaReservaDto> butacas = new ArrayList<>();
 
-        //ACT and ASSERT
-        assertThrows(EntityNotFoundException.class, () -> {
-            vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto);
-        });
-    }
+        ButacaReservaDto butacaReservaDto = new ButacaReservaDto("B1", "Mariano");
+        ButacaReservaDto butacaReservaDto1 = new ButacaReservaDto("C1", "Paola");
 
-    @Test
-    @DisplayName("US2 y US3 - Camino el vuelo que quiere reservar no tiene asignadas butacas.")
-    void reservarVueloThrowEntityNotFoundExceptionTest1() {
-
-        //ARRANGE
-        String nombreUsuarioTipoCliente = "Miguel"; //CLIENTE
-
-        //Intentamos reservar un vuelo disponible sin butacas asignadas.
-        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(125, "Aerolineas Uruguayas"
-                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
-                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
-                , "Buenos Aires" , "Uruguay", "AE05", TipoPago.PAGO_EN_LINEA);
-
-        //ACT and ASSERT
-        assertThrows(EntityNotFoundException.class, () -> {
-            vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto);
-        });
-    }
-
-    @Test
-    @DisplayName("US2 y US3 - Camino la posición de la butaca seleccionada no pertenece al vuelo.")
-    void reservarVueloThrowNoSuchElementExceptionButacaTest() {
-
-        //ARRANGE
-        String nombreUsuarioTipoCliente = "Miguel"; //CLIENTE
-
-        //Intentamos reservar una butaca que no pertenece al vuelo disponible.
-        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, "Aerolineas Argentinas"
-                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
-                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
-                , "Buenos Aires" , "Uruguay", "AE08", TipoPago.PAGO_EN_LINEA);
+        butacas.add(butacaReservaDto);
+        butacas.add(butacaReservaDto1);
+        //Intentamos reservar un vuelo que no existe
+        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(667, butacas, TipoPago.PAGO_EN_LINEA);
 
         //ACT and ASSERT
         assertThrows(NoSuchElementException.class, () -> {
@@ -283,17 +323,92 @@ public class VueloServiceImplTestSinMock {
     }
 
     @Test
-    @DisplayName("US2 y US3 - Camino la posición de la butaca seleccionada no está disponible.")
+    @DisplayName("US2 y US3 - Camino el vuelo que intenta reservar ya caducó.")
+    void reservarVueloThrowIllegalArgumentExceptionTest() {
+
+        //ARRANGE
+        String nombreUsuarioTipoCliente = "Miguel"; //CLIENTE
+
+        List<ButacaReservaDto> butacas = new ArrayList<>();
+
+        ButacaReservaDto butacaReservaDto = new ButacaReservaDto("B1", "Mariano");
+        ButacaReservaDto butacaReservaDto1 = new ButacaReservaDto("C1", "Paola");
+
+        butacas.add(butacaReservaDto);
+        butacas.add(butacaReservaDto1);
+        //Intentamos reservar un vuelo que ya caducó
+        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(934, butacas, TipoPago.PAGO_EN_LINEA);
+
+        //ACT and ASSERT
+        assertThrows(IllegalArgumentException.class, () -> {
+            vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto);
+        });
+    }
+
+    @Test
+    @DisplayName("US2 y US3 - Camino el vuelo que quiere reservar no tiene asignadas butacas.")
+    void reservarVueloThrowEntityNotFoundExceptionTest() {
+
+        //ARRANGE
+        String nombreUsuarioTipoCliente = "Miguel"; //CLIENTE
+
+        List<ButacaReservaDto> butacas = new ArrayList<>();
+
+        ButacaReservaDto butacaReservaDto = new ButacaReservaDto("B1", "Mariano");
+        ButacaReservaDto butacaReservaDto1 = new ButacaReservaDto("C1", "Paola");
+
+        butacas.add(butacaReservaDto);
+        butacas.add(butacaReservaDto1);
+        //Intentamos reservar un vuelo que no tiene asignadas butacas.
+        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(578, butacas, TipoPago.PAGO_EN_LINEA);
+
+        //ACT and ASSERT
+        assertThrows(EntityNotFoundException.class, () -> {
+            vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto);
+        });
+    }
+
+
+    @Test
+    @DisplayName("US2 y US3 - Camino la posición de la butaca que intenta reservar no pertenece al vuelo.")
+    void reservarVueloThrowNoSuchElementExceptionButacaTest() {
+
+        //ARRANGE
+        String nombreUsuarioTipoCliente = "Miguel"; //CLIENTE
+
+        List<ButacaReservaDto> butacas = new ArrayList<>();
+
+        ButacaReservaDto butacaReservaDto = new ButacaReservaDto("D1", "Mariano");
+        //Intentamos reservar una butaca que no pertenece al vuelo disponible.
+        ButacaReservaDto butacaReservaDto1 = new ButacaReservaDto("E1", "Paola");
+
+        butacas.add(butacaReservaDto);
+        butacas.add(butacaReservaDto1);
+
+        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, butacas, TipoPago.PAGO_EN_LINEA);
+
+        //ACT and ASSERT
+        assertThrows(NoSuchElementException.class, () -> {
+            vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto);
+        });
+    }
+
+    @Test
+    @DisplayName("US2 y US3 - Camino la posición de la butaca que intenta reservar ya se encuentra ocupada.")
     void reservarVueloThrowEntityNotFoundExceptionTest3() {
 
         //ARRANGE
         String nombreUsuarioTipoCliente = "Miguel"; //CLIENTE
 
+        List<ButacaReservaDto> butacas = new ArrayList<>();
         //Intentamos reservar una butaca que ya está reservada.
-        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, "Aerolineas Argentinas"
-                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
-                , LocalDateTime.of(2023, 06, 25, 23, 53,30)
-                , "Buenos Aires" , "Uruguay", "AE04", TipoPago.PAGO_EN_LINEA);
+        ButacaReservaDto butacaReservaDto = new ButacaReservaDto("A1", "Mariano");
+        ButacaReservaDto butacaReservaDto1 = new ButacaReservaDto("B1", "Paola");
+
+        butacas.add(butacaReservaDto);
+        butacas.add(butacaReservaDto1);
+
+        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, butacas, TipoPago.PAGO_EN_LINEA);
 
         //ACT and ASSERT
         assertThrows(EntityNotFoundException.class, () -> {
@@ -312,15 +427,18 @@ public class VueloServiceImplTestSinMock {
 
         List<ReservaDto> expected = new ArrayList<>();
 
-        UsuarioDto usuarioDto = new UsuarioDto("Miguel", 156453);
-
         VueloReservaDto vueloReservaDto = new VueloReservaDto(666, "Aerolineas Argentinas",
-                LocalDateTime.of(2023, 06, 25, 23, 53, 30),
-                LocalDateTime.of(2023, 06, 25, 23, 53, 30), "Buenos Aires",
+                LocalDateTime.of(2050, 07, 25, 8, 00, 00),
+                LocalDateTime.of(2050, 07, 25, 8, 45, 00), "Buenos Aires",
                 "Uruguay");
 
+        List<ButacaReservaDto> butacas = new ArrayList<>();
+        ButacaReservaDto butacaReservaDto = new ButacaReservaDto("A1", "Miguel");
+        butacas.add(butacaReservaDto);
+
         ReservaDto reservaDto = new ReservaDto(TipoPago.TRANSFERENCIA_BANCARIA, 15000D,
-                LocalDate.of(2023, 04, 25), usuarioDto, vueloReservaDto, "AE04");
+                LocalDateTime.of(2023, 04, 25, 13, 45, 12), vueloReservaDto
+                , butacas);
 
         expected.add(reservaDto);
 
@@ -333,7 +451,7 @@ public class VueloServiceImplTestSinMock {
         assertEquals(expected, actual);
         //Si lo ejecutamos asi ocurre lo siguiente :org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role:
         // com.codoacodo.flysky.demo.model.entity.UsuarioEntity.reserva: could not initialize proxy - no Session
-        //DEBEMOS AGREGAR EN LA ENTIDAD UsuarioEntity en el atributo reserva la propiedad fetch = FetchType.EAGER.
+        //DEBEMOS AGREGAR EN LA ENTIDAD Usuario en el atributo reserva la propiedad fetch = FetchType.EAGER.
     }
 
     @Test
@@ -422,7 +540,7 @@ public class VueloServiceImplTestSinMock {
         String nombreUsuarioTipoAdministrador = "Juan"; //ADMINISTRADOR
         LocalDate fecha = LocalDate.of(2023, 04, 25);
 
-        VentaDto expected = new VentaDto( LocalDate.of(2023, 04, 25), 1, 15000D);
+        VentaDto expected = new VentaDto( 1, 15000D);
 
         //ACT
         VentaDto actual = vueloService
@@ -466,8 +584,33 @@ public class VueloServiceImplTestSinMock {
     }
 
     @Test
+    @DisplayName("US5- Camino: no hay reservas realizadas.")
+    @Disabled
+    void obtenerNumeroVentasIngresosDiariosThrowFirstEntityNotFoundExceptionTest() {
+        //Orden de borrado siempre y cuando no se utilice fetch = FetchType.EAGER
+        //butacaRepository.deleteAll(); //No utilizar fetch = FetchType.EAGER en la entidades relacionadas a Butaca (Reserva y Vuelo)
+        //usuarioRepository.deleteAll();//Agregar CascadeType.REMOVE en el atributo butacas en la entidad Reserva para borrar las reservas del usuario.
+        //reservaRepository.deleteAll(); //Si pretendemos borrar todas las reservas
+        //vueloRepository.deleteAll();
+        //Se puede utilizar porque estamos trabajando con una base de datos en memoria (H2) para el entorno de test.
+        // Si ejecutamos todos los test simultaneamente debemos utilizar la anotación
+        // @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD).
+        //Al borrar el repositorio Usuario siempre nos va a lanzar  NoSuchElementException por lo que el test no va a pasar.
+        //DEBEMOS UTILIZAR TEST CON MOCK PARA TESTEAR ESTE METODO.
+
+        //ARRANGE
+        String nombreUsuarioTipoAdministrador = "Juan"; //ADMINISTRADOR
+        LocalDate fecha = LocalDate.of(2023, 04, 25);
+
+        //ACT and ASSERT
+        assertThrows(EntityNotFoundException.class, () -> {
+            vueloService.obtenerNumeroVentasIngresosDiarios(nombreUsuarioTipoAdministrador, fecha);
+        });
+    }
+
+    @Test
     @DisplayName("US5- Camino: no hay reservas realizadas para tal fecha.")
-    void obtenerNumeroVentasIngresosDiariosThrowEntityNotFoundExceptionTest() {
+    void obtenerNumeroVentasIngresosDiariosThrowSecondEntityNotFoundExceptionTest() {
 
         //ARRANGE
         String nombreUsuarioTipoAdministrador = "Juan"; //ADMINISTRADOR
@@ -479,4 +622,5 @@ public class VueloServiceImplTestSinMock {
             vueloService.obtenerNumeroVentasIngresosDiarios(nombreUsuarioTipoAdministrador, fecha);
         });
     }
+
 }

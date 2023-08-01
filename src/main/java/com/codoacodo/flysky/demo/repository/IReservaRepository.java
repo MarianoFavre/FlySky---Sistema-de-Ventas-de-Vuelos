@@ -13,5 +13,5 @@ public interface IReservaRepository extends JpaRepository<Reserva, Long> {
 
      // No utilizada ya que fue obtenido de forma más eficiente llamado a un solo repositorio.
      //List<ReservaEntity> findByUsuario(UsuarioEntity usuarioEntity);
-     List<Reserva> findByFechaReserva(LocalDate fecha);
+
 }

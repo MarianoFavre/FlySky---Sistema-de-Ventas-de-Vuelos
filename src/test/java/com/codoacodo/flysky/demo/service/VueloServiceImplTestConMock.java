@@ -1,7 +1,7 @@
 package com.codoacodo.flysky.demo.service;
 
-import com.codoacodo.flysky.demo.dto.request.ReservaVueloDto;
 import com.codoacodo.flysky.demo.exception.EntityNotFoundException;
+import com.codoacodo.flysky.demo.model.entity.Butaca;
 import com.codoacodo.flysky.demo.model.entity.Reserva;
 import com.codoacodo.flysky.demo.model.entity.Usuario;
 import com.codoacodo.flysky.demo.model.entity.Vuelo;
@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +29,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
 @ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class VueloServiceImplTestConMock {
 
     @Mock
@@ -49,57 +50,81 @@ public class VueloServiceImplTestConMock {
     VueloServiceImpl vueloService;
 
     @Test
-    @DisplayName("US1- Camino no hay vuelos disponibles.")
-    @Disabled
-    void obtenerVuelosDisponiblesThrowEntityNotFoundExceptionTest() {
+    @DisplayName("US1- Camino la lista de vuelos está vacía.")
+    void obtenerVuelosDisponiblesThrowFirstEntityNotFoundExceptionTest() {
 
         //ARRANGE
         String nombreUsuarioTipoCliente = "Mariano"; //CLIENTE
 
-        List<Reserva> reservaEntities = new ArrayList<>();
+        List<Reserva> reservasMock = new ArrayList<>();
 
         Optional<Usuario> usuarioMock = Optional
-                .of(new Usuario(4L, "Mariano", TipoUsuario.CLIENTE, 666666, reservaEntities));
-
-        System.out.println(usuarioMock);
+                .of(new Usuario(4L, "Mariano", TipoUsuario.CLIENTE, 666666, reservasMock));
 
         List<Vuelo> vuelosMock = new ArrayList<>();
 
         when(usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente)).thenReturn(usuarioMock);
-        when(vueloRepository.findByDisponibleTrue()).thenReturn(vuelosMock);
+        when(vueloRepository.findAll()).thenReturn(vuelosMock);
+        //Al estar en producción los atributos de la inyeccion de dependencias en final no inyectaba los mock.
 
         //ACT and ASSERT
         assertThrows(EntityNotFoundException.class, () -> {
             vueloService.obtenerVuelosDisponibles(nombreUsuarioTipoCliente);
         });
-
     }
 
     @Test
-    @DisplayName("US2 y US3 - Camino no hay vuelos disponibles.")
-    @Disabled
-    void reservarVueloThrowEntityNotFoundExceptionTest() {
+    @DisplayName("US1- Camino no hay vuelos disponibles.")
+    void obtenerVuelosDisponiblesThrowSecondEntityNotFoundExceptionTest() {
 
         //ARRANGE
-        String nombreUsuarioTipoCliente = "Miguel"; //CLIENTE
+        String nombreUsuarioTipoCliente = "Mariano"; //CLIENTE
 
-        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, "Aerolineas Argentinas"
-                , LocalDateTime.of(2023, 06, 25, 23, 53, 30)
-                , LocalDateTime.of(2023, 06, 25, 23, 53, 30)
-                , "Buenos Aires", "Uruguay", "AE05", TipoPago.PAGO_EN_LINEA);
+        List<Reserva> reservasMock = new ArrayList<>();
 
-        Usuario usuarioClienteMock =
-                new Usuario(1L, "Miguel", TipoUsuario.CLIENTE, 156453, null);
+        Optional<Usuario> usuarioMock = Optional
+                .of(new Usuario(4L, "Mariano", TipoUsuario.CLIENTE, 666666, reservasMock));
+
+        List<Butaca> butacasMock = new ArrayList<>();
 
         List<Vuelo> vuelosMock = new ArrayList<>();
 
-        when(usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente)).thenReturn(Optional.of(usuarioClienteMock));
-        when(vueloRepository.findByDisponibleTrue()).thenReturn(vuelosMock);
+        Vuelo vueloMock = new Vuelo(1L, 666, 156, "Aerolineas Argentinas",
+                LocalDateTime.of(2050, 07, 25, 8, 00, 00),
+                LocalDateTime.of(2050, 07, 25, 8, 45, 00), 15000D,
+                "Buenos Aires", "Uruguay", reservasMock, butacasMock );
 
+        vuelosMock.add(vueloMock);
+
+        when(usuarioRepository.findByNombreUsuario(nombreUsuarioTipoCliente)).thenReturn(usuarioMock);
+        when(vueloRepository.findAll()).thenReturn(vuelosMock);
 
         //ACT and ASSERT
         assertThrows(EntityNotFoundException.class, () -> {
-            vueloService.reservarVuelo(nombreUsuarioTipoCliente, reservaVueloDto);
+            vueloService.obtenerVuelosDisponibles(nombreUsuarioTipoCliente);
         });
     }
+
+    @Test
+    @DisplayName("US5- Camino: no hay reservas realizadas.")
+    void obtenerNumeroVentasIngresosDiariosThrowFirstEntityNotFoundExceptionTest() {
+
+        //ARRANGE
+        String nombreUsuarioTipoAdministrador = "Juan"; //ADMINISTRADOR
+        LocalDate fecha = LocalDate.of(2023, 04, 25);
+
+        List<Reserva> reservasMock = new ArrayList<>();
+
+        Optional<Usuario> usuarioMock = Optional
+                .of(new Usuario(3L, "Juan", TipoUsuario.ADMINISTRADOR, 984866, reservasMock));
+
+        when(usuarioRepository.findByNombreUsuario(nombreUsuarioTipoAdministrador)).thenReturn(usuarioMock);
+        when(reservaRepository.findAll()).thenReturn(reservasMock);
+
+        //ACT and ASSERT
+        assertThrows(EntityNotFoundException.class, () -> {
+            vueloService.obtenerNumeroVentasIngresosDiarios(nombreUsuarioTipoAdministrador, fecha);
+        });
+    }
+
 }

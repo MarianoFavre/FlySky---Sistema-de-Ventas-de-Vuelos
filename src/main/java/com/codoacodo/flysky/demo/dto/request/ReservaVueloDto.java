@@ -17,7 +17,7 @@ import java.util.List;
 @Setter //El DTO es inmutable pero utilizamos el set porque lo necesita el objeto de tipo ModelMapper.
 public class ReservaVueloDto {
 
-    private Long numeroVuelo;
+    private Integer numeroVuelo;
     private List<ButacaReservaDto> butacas;
     private TipoPago tipoPago;
 

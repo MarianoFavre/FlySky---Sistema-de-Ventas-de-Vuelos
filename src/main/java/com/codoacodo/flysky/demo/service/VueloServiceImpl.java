@@ -28,10 +28,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class VueloServiceImpl implements IVueloService {
-    private final IVueloRepository vueloRepository;
-    private final IUsuarioRepository usuarioRepository;
-    private final IButacaRepository butacaRepository;
-    private final IReservaRepository reservaRepository;
+
+    IVueloRepository vueloRepository;
+    IUsuarioRepository usuarioRepository;
+    IButacaRepository butacaRepository;
+    IReservaRepository reservaRepository;
 
     public VueloServiceImpl(IVueloRepository vueloRepository, IUsuarioRepository usuarioRepository,
                             IButacaRepository butacaRepository, IReservaRepository reservaRepository) {
@@ -139,6 +140,7 @@ public class VueloServiceImpl implements IVueloService {
                 }
 
                 butacaExistente.setDisponible(Boolean.FALSE);
+                butacaExistente.setNombrePasajero(butacaReservaDto.getNombrePasajero());
 
                 butacasReserva.add(butacaExistente);
             }
@@ -156,6 +158,23 @@ public class VueloServiceImpl implements IVueloService {
         throw new UnAuthorizedException("Usuario registrado como " + usuarioCliente.getTipoUsuario() + ". Registrese como " +
                 "CLIENTE para realizar una reserva.");
 
+    }
+
+    private Reserva crearReservaEntityPersistencia(ReservaVueloDto reservaVueloDto,
+                                                   Vuelo vueloReserva,
+                                                   Usuario usuario,
+                                                   List<Butaca> butacasReserva) {
+        Reserva reservaEntityPersistencia = new Reserva();
+        reservaEntityPersistencia.setTipoPago(reservaVueloDto.getTipoPago());
+        reservaEntityPersistencia.setMontoPago
+                (Util.montoAPagar(reservaVueloDto.getTipoPago(), vueloReserva.getPrecio()) * butacasReserva.size());
+        reservaEntityPersistencia.setFechaReserva(LocalDateTime.now());
+        reservaEntityPersistencia.setUsuario(usuario);
+        reservaEntityPersistencia.setVuelo(vueloReserva);
+        //seteamos las butacas para poder realizar el mapper de reservaEntity y nos retorne las butacas reservadas
+        reservaEntityPersistencia.setButacas(butacasReserva);
+
+        return reservaEntityPersistencia;
     }
 
     @Override
@@ -220,47 +239,47 @@ public class VueloServiceImpl implements IVueloService {
                     "diarios");
         }
 
-        List<Reserva> reservasEntity = reservaRepository.findByFechaReserva(fecha);
+        List<Reserva> reservasEntity = reservaRepository.findAll();
 
         if (reservasEntity.isEmpty()) {
+            throw new EntityNotFoundException("No hay reservas realizadas.");
+        }
 
-            DateTimeFormatter formatter = DateTimeFormatter
-                    .ofPattern("dd 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
+        List<Reserva> reservasFecha = reservasEntity.stream()
+                .filter(reserva -> reserva.getFechaReserva().toLocalDate().equals(fecha))
+                .toList();
 
-            throw new EntityNotFoundException("No hay reservas realizadas el " + formatter.format(fecha) + ".");
+        if (reservasFecha.isEmpty()) {
+            //throw new EntityNotFoundException("No hay reservas realizadas el " + Util.fechaString(fecha) + ".");
+            throw new EntityNotFoundException("No hay reservas realizadas el " + fecha.format(DateTimeFormatter
+                    .ofPattern("dd 'de' MMMM 'de' yyyy", new Locale("es", "ES"))) + ".");
         }
 
         VentaDto ventaDto = new VentaDto();
-        ventaDto.setCantidadVenta(reservasEntity.size());
+        ventaDto.setCantidadVenta(reservasFecha.size());
 
-        List<Double> montosPago = reservasEntity.stream().map(Reserva::getMontoPago).toList();
+        List<Double> montosPago = reservasFecha.stream().map(Reserva::getMontoPago).toList();
 
         ventaDto.setIngreso(montosPago.stream()
                 .reduce(0.0, Double::sum)); //operación de reducción para realizar la suma
 
         /*Otra alternativa using Lambda expression i ->i
-        double ingreso = reservasEntity.stream()
+        double ingreso = reservasFecha.stream()
                 .mapToDouble(reserva -> reserva.getMontoPago())
                 .sum();
         */
 
         return ventaDto;
     }
+/*
+    @Override
+    public void borrarVuelos(Long id) {
+        //Orden de borrado siempre y cuando no se utilice fetch = FetchType.EAGER
+        butacaRepository.deleteAll(); //No utilizar fetch = FetchType.EAGER en la entidades relacionadas a Butaca (Reserva y Vuelo)
+        //usuarioRepository.deleteAll();//Agregar CascadeType.REMOVE en el atributo butacas en la entidad Reserva para borrar las reservas del usuario.
+        //reservaRepository.deleteAll(); //Si pretendemos borrar todas las reservas
+        //vueloRepository.deleteAll();
 
-    private Reserva crearReservaEntityPersistencia(ReservaVueloDto reservaVueloDto,
-                                                   Vuelo vueloReserva,
-                                                   Usuario usuario,
-                                                   List<Butaca> butacasReserva) {
-        Reserva reservaEntityPersistencia = new Reserva();
-        reservaEntityPersistencia.setTipoPago(reservaVueloDto.getTipoPago());
-        reservaEntityPersistencia.setMontoPago
-                (Util.montoAPagar(reservaVueloDto.getTipoPago(), vueloReserva.getPrecio()) * butacasReserva.size());
-        reservaEntityPersistencia.setFechaReserva(LocalDate.now());
-        reservaEntityPersistencia.setUsuario(usuario);
-        reservaEntityPersistencia.setVuelo(vueloReserva);
-        //seteamos las butacas para poder realizar el mapper de reservaEntity y nos retorne las butacas reservadas
-        reservaEntityPersistencia.setButacas(butacasReserva);
-
-        return reservaEntityPersistencia;
     }
+*/
 }

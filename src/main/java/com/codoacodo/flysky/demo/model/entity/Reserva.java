@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -24,7 +25,7 @@ public class Reserva {
 
     private double montoPago;
 
-    private LocalDate fechaReserva;
+    private LocalDateTime fechaReserva;
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "usuario_id", referencedColumnName="id", nullable = false)
@@ -33,10 +34,6 @@ public class Reserva {
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "vuelo_id", referencedColumnName="id", nullable = false)
     private Vuelo vuelo;
-
-    //@OneToOne(cascade = CascadeType.MERGE)
-    //@JoinColumn(name = "butaca_id", nullable = false)
-    //private Butaca butaca;
 
     @OneToMany(mappedBy = "reserva", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     private List<Butaca> butacas;

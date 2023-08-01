@@ -20,20 +20,16 @@ public class Butaca {
 
     private Boolean disponible;
 
-    //A3, B34 etc posicion del asiento
     private String posicion;
 
-    //private String nombrePasajero;
+    private String nombrePasajero;
+    //Podemos sustituir por una relacion OneToOne con private Pasajero pasajero para incluir más datos del pasajero
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne()
     @JoinColumn(name = "vuelo_id", referencedColumnName="id", nullable = false)
     private Vuelo vuelo;
-
-    //@OneToOne(mappedBy = "butaca")
-    //private Reserva reserva;
 
     @ManyToOne()
     @JoinColumn(name = "reserva_id", referencedColumnName="id")
     private Reserva reserva;
-
 }
