@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,8 +30,11 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 @SpringBootTest
+@ExtendWith(MockitoExtension.class)
+//@TestPropertySource(properties = {"SCOPE = test"})
+//Similar a setear SCOPE=test en Environment variables dentro de Edit Configurations o Modify Run Configuration
+// de com.codoacodo.flysky.demo
 public class VueloServiceImplTestConMock {
 
     @Mock

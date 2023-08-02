@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: admin
+    url:  jdbc:mysql://localhost:3306/flysky_db?useSSL=false&serverTimeZone=UTC
+    hikari:
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    defer-datasource-initialization: true
+    # Es para que espere que JPA cree las tablas antes de ejecutar los scripts que están dentro de los archivos .sql
+    hibernate:
+      ddl-auto: update
+  sql:
+    init:
+      data-locations: classpath:data.sql
+      #mode: always
+      #Propiedad necesaria para MySql pero no para H2. Esta propiedad debería ser comentada después de haber ejecutado por
+      # primera vez el proyecto para que no ejecuta el archivo .sql.

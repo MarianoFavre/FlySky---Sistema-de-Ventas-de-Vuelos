@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,6 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
+//@TestPropertySource(properties = {"SCOPE = test"})
+//Similar a setear SCOPE=test en Environment variables dentro de Edit Configurations o Modify Run Configuration
+// de com.codoacodo.flysky.demo
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 //Mantiene el contexto inicial del repositorio después de ejecutar cada test
 public class VueloServiceImplTestSinMock {
