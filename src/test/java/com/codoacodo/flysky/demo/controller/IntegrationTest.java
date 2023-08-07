@@ -99,7 +99,7 @@ public class IntegrationTest {
         butacaDtos.add(butacaDto23);
         butacaDtos.add(butacaDto24);
 
-        VueloDto vueloDto1 = new VueloDto(666, 156, "Aerolineas Argentinas",
+        VueloDto vueloDto1 = new VueloDto("666", 156, "Aerolineas Argentinas",
                 LocalDateTime.of(2050, 07, 25, 8, 00, 00),
                 LocalDateTime.of(2050, 07, 25, 8, 45, 00), 15000D,
                 "Buenos Aires", "Uruguay", butacaDtos);
@@ -150,9 +150,9 @@ public class IntegrationTest {
         butacas.add(butacaReservaDto);
         butacas.add(butacaReservaDto1);
 
-        ReservaVueloDto reservaVueloDto = new ReservaVueloDto(666, butacas, TipoPago.PAGO_EN_LINEA);
+        ReservaVueloDto reservaVueloDto = new ReservaVueloDto("666", butacas, TipoPago.PAGO_EN_LINEA);
 
-        VueloReservaDto vuelo = new VueloReservaDto(666, "Aerolineas Argentinas",
+        VueloReservaDto vuelo = new VueloReservaDto("666", "Aerolineas Argentinas",
                 LocalDateTime.of(2050, 07, 25, 8, 00, 00),
                 LocalDateTime.of(2050, 07, 25, 8, 45, 00),
                 "Buenos Aires", "Uruguay");
@@ -192,7 +192,7 @@ public class IntegrationTest {
 
         List<ReservaDto> expected = new ArrayList<>();
 
-        VueloReservaDto vueloReservaDto = new VueloReservaDto(666, "Aerolineas Argentinas",
+        VueloReservaDto vueloReservaDto = new VueloReservaDto("666", "Aerolineas Argentinas",
                 LocalDateTime.of(2050, 07, 25, 8, 00, 00),
                 LocalDateTime.of(2050, 07, 25, 8, 45, 00), "Buenos Aires",
                 "Uruguay");

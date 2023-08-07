@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @ToString
 public class VueloReservaDto {
 
-    private Integer numeroVuelo;
+    private String numeroVuelo;
     private String aerolinea;
     private LocalDateTime fechaHoraPartida;
     private LocalDateTime fechaHoraLlegada;

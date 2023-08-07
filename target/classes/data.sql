@@ -6,12 +6,12 @@ VALUES (156453,'Miguel','CLIENTE'),
 
 --Sería recomendable agregar avion_id (relacion 1 a 1 con vuelo) en lugar de capacidad y sacar precio
 INSERT INTO vuelo(numero_vuelo, capacidad, aerolinea, fecha_hora_partida, fecha_hora_llegada, precio, origen, destino)
-VALUES (666,156,'Aerolineas Argentinas','2050-07-25 08:00:00','2050-07-25 08:45:00', 15000, 'Buenos Aires', 'Uruguay'),
-       (578,156,'Aerolineas Argentinas','2050-07-25 08:00:00','2050-07-25 08:45:00', 15000, 'Buenos Aires', 'Uruguay'),
-       (934,156,'Aerolineas Argentinas','2023-07-25 08:00:00','2023-07-25 08:45:00', 15000, 'Buenos Aires', 'Uruguay');
-       --(125,156,'Aerolineas Uruguayas',DATEADD('MINUTE',  -9, CURRENT_TIMESTAMP), NOW(), 15000, 'Buenos Aires', 'Uruguay');
-       --(125,156,'Aerolineas Uruguayas',DATEADD('DAY',  1, CURRENT_TIMESTAMP), NOW() + 1 , 15000, 'Buenos Aires', 'Uruguay');
-       --(125,156,'Aerolineas Uruguayas',DATEADD('HOUR',  1, CURRENT_TIMESTAMP), DATEADD('MINUTE',  105, CURRENT_TIMESTAMP) , 15000, 'Buenos Aires', 'Uruguay');
+VALUES ('666',156,'Aerolineas Argentinas','2050-07-25 08:00:00','2050-07-25 08:45:00', 15000, 'Buenos Aires', 'Uruguay'),
+       ('578',156,'Aerolineas Argentinas','2050-07-25 08:00:00','2050-07-25 08:45:00', 15000, 'Buenos Aires', 'Uruguay'),
+       ('934',156,'Aerolineas Argentinas','2023-07-25 08:00:00','2023-07-25 08:45:00', 15000, 'Buenos Aires', 'Uruguay');
+       --('125',156,'Aerolineas Uruguayas',DATEADD('MINUTE',  -9, CURRENT_TIMESTAMP), NOW(), 15000, 'Buenos Aires', 'Uruguay');
+       --('125',156,'Aerolineas Uruguayas',DATEADD('DAY',  1, CURRENT_TIMESTAMP), NOW() + 1 , 15000, 'Buenos Aires', 'Uruguay');
+       --('125',156,'Aerolineas Uruguayas',DATEADD('HOUR',  1, CURRENT_TIMESTAMP), DATEADD('MINUTE',  105, CURRENT_TIMESTAMP) , 15000, 'Buenos Aires', 'Uruguay');
        --Lo comentado funciona en H2 pero no en MySql
 INSERT INTO reserva(tipo_pago, usuario_id, vuelo_id, monto_pago, fecha_reserva)
 VALUES ('TRANSFERENCIA_BANCARIA',1,1, 15000, '2023-04-25 13:45:12');

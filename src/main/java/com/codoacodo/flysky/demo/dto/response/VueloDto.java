@@ -12,7 +12,7 @@ import java.util.List;
 @EqualsAndHashCode
 public class VueloDto {
 
-    private Integer numeroVuelo;
+    private String numeroVuelo;
     private Integer capacidad;
     private String aerolinea;
     private LocalDateTime fechaHoraPartida;

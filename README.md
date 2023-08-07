@@ -35,4 +35,4 @@ El sistema de ventas de vuelos de FlySky se diseñará para agilizar el proceso 
 El sistema de ventas de vuelos de FlySky tiene como objetivo mejorar la experiencia del cliente al simplificar el proceso de reserva de boletos, ofrecer opciones de vuelo más completas y garantizar transacciones seguras. Se desarrollará una API RESTful en Java para implementar estas funcionalidades. Al utilizar esta API, FlySky busca fortalecer su posición en el mercado de agencias de viajes y brindar un servicio excepcional a sus clientes, superando sus expectativas y fomentando relaciones comerciales duraderas.
 ------------------------------------------------------------------------------------------------------------------------'
 
-Para testear la aplicación se trabaja con conexion a H2 utilizando application.yml. Al correr el programa en el entorno de test se realiza una precarga con un archivo data.sql. 
+Mediante Spring Profile (application.yml) utilizamos H2 para el entorno de test y MySql para producción realizando una precarga con un archivo data.sql

@@ -93,7 +93,7 @@ public class VueloServiceImplTestConMock {
 
         List<Vuelo> vuelosMock = new ArrayList<>();
 
-        Vuelo vueloMock = new Vuelo(1L, 666, 156, "Aerolineas Argentinas",
+        Vuelo vueloMock = new Vuelo(1L, "666", 156, "Aerolineas Argentinas",
                 LocalDateTime.of(2050, 07, 25, 8, 00, 00),
                 LocalDateTime.of(2050, 07, 25, 8, 45, 00), 15000D,
                 "Buenos Aires", "Uruguay", reservasMock, butacasMock );
